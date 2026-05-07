@@ -46,7 +46,7 @@ class Manager(object):
         SimpleAspectManager.trorbs = state.transits
         self.suffixes = suffixes
 
-        f = open('astronex/resources/ac.pk')
+        f = open('astronex/resources/ac.pk', 'rb')
         self.acpaths = pickle.load(f)
         f.close()
 
