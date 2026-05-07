@@ -8,7 +8,7 @@ from .. gui.popup import PlanPopup, TextPopup
 from .. gui.cycle_dlg import CycleSelector
 from .. gui.aux_dlg import AuxWindow
 from .. gui.bridgewin import BridgePEWindow
-from .. extensions.path import path
+from path import Path
 from .. countries import cata_reg
 from .. utils import parsestrtime
 from .sdasurface import DrawDiagram, HouseSelector
@@ -816,7 +816,7 @@ class ChangeDatePanel(gtk.VBox):
         but = gtk.Button()
         img = gtk.Image()
         appath = boss.app.appath
-        imgfile = path.joinpath(appath,"astronex/resources/refresh-18.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/refresh-18.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         butbox.pack_start(but,False,False)

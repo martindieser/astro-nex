@@ -5,7 +5,7 @@ import gtk, gobject
 import cairo, pango
 from io import StringIO 
 from configobj import ConfigObj, ConfigObjError
-from .. extensions.path import path
+from path import Path
 from .. config import reload_config
 
 boss = None
@@ -34,7 +34,7 @@ class IniEditor(gtk.Dialog):
         sw.add(textview)
         self.vbox.pack_start(sw)
 
-        cfgfile = path.joinpath(boss.opts.home_dir,'cfg.ini')
+        cfgfile = Path.joinpath(boss.opts.home_dir,'cfg.ini')
         infile = open(cfgfile, "r")
 
         if infile:

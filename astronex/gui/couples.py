@@ -6,7 +6,7 @@ from .datewidget import DateEntry, set_background
 from pytz import timezone
 from datetime import datetime
 from .. extensions.validation import MaskEntry,ValidationError
-from .. extensions.path import path
+from path import Path
 
 curr = None
 boss = None
@@ -72,7 +72,7 @@ class CouplesPanel(gtk.HBox):
         but = gtk.Button()
         img = gtk.Image()
         appath = boss.app.appath
-        imgfile = path.joinpath(appath,"astronex/resources/gtk-go-down.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/gtk-go-down.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.connect('clicked',self.on_add_date_clicked)

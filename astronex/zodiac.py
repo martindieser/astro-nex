@@ -1,4 +1,4 @@
-from .extensions.path import path
+from path import Path
 from collections import deque
 
 from . import config
@@ -166,7 +166,7 @@ def test():
     import cairo
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,100,100)
     context = cairo.Context(surface)
-    config.read_config(path("/home/jose/.astronex"))
+    config.read_config(Path("/home/jose/.astronex"))
     zod = Zodiac(context)
     for z in zod.zod:
         print(z.__dict__)

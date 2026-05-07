@@ -12,7 +12,7 @@ lang_ca = gettext.translation('astronex','./astronex/locale', languages=['ca'])
 lang_de = gettext.translation('astronex','./astronex/locale', languages=['de'])
 langs = { 'en': lang_en, 'es': lang_es, 'ca': lang_ca, 'de': lang_de }
 
-from .extensions.path import path
+from path import Path
 version = "1.2"
 
 def die(message):
@@ -44,24 +44,24 @@ ephe_flag = 4
 def check_home_dir(appath):
     """Set home dir, copying needed files"""
     global home_dir, ephe_flag
-    default_home = path.joinpath(path.expanduser(path('~')), home_dir)
+    default_home = Path.joinpath(Path.expanduser(Path('~')), home_dir)
 
-    if not path.exists(default_home):
-        path.mkdir(default_home)
-    ephepath = path.joinpath(default_home,ephe_path)
-    if not path.exists(ephepath):
-        path.mkdir(path.joinpath(default_home,ephe_path))
-        path.copy(path.joinpath(appath,"astronex/resources/README"),ephepath)
+    if not Path.exists(default_home):
+        Path.mkdir(default_home)
+    ephepath = Path.joinpath(default_home,ephe_path)
+    if not Path.exists(ephepath):
+        Path.mkdir(Path.joinpath(default_home,ephe_path))
+        Path.copy(Path.joinpath(appath,"astronex/resources/README"),ephepath)
     if ephepath.glob("*.se1"):
         ephe_flag = 2
-    if not path.exists(path.joinpath(default_home,default_db)):
-        path.copy(path.joinpath(appath,"astronex/resources/charts.db"),default_home)
+    if not Path.exists(Path.joinpath(default_home,default_db)):
+        Path.copy(Path.joinpath(appath,"astronex/resources/charts.db"),default_home)
 
     home_dir = default_home
 
 
 def init_config(homedir,opts,state):
-    ephepath = path.joinpath(homedir,opts.ephepath)
+    ephepath = Path.joinpath(homedir,opts.ephepath)
     from pysw import setpath
     setpath(str(ephepath))
 
@@ -102,7 +102,7 @@ class Splash (gtk.Window):
         self.set_position (gtk.WIN_POS_CENTER)
         vbox = gtk.VBox()
         img = gtk.Image()
-        splashimg = path.joinpath(appath,"astronex/resources/splash.png")
+        splashimg = Path.joinpath(appath,"astronex/resources/splash.png")
         img.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(splashimg))
         vbox.pack_start(img)
         self.add(vbox)

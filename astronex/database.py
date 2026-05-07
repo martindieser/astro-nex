@@ -2,7 +2,7 @@
 '''Database services'''
 import sqlite3
 from copy import copy
-from .extensions.path import path
+from path import Path
 from .utils import dectodeg,degtodec
 from . import locale
 locale.setlocale(locale.LC_ALL,'')
@@ -20,13 +20,13 @@ CREATE TABLE custom.%s ( CC Text(2), AC Text(2), Ciudad Text(50), Latitud Real, 
 
 def connect(app):
     global local_conn, chart_conn, customloc_conn
-    dbfile = path.joinpath(app.appath,"astronex/db/local.db")
+    dbfile = Path.joinpath(app.appath,"astronex/db/local.db")
     local_conn = sqlite3.connect(str(dbfile))
     local_conn.create_collation('westcoll', westerncollate)
-    dbfile = path.joinpath(app.home_dir,"charts.db")
+    dbfile = Path.joinpath(app.home_dir,"charts.db")
     chart_conn = sqlite3.connect(dbfile)
     chart_conn.create_collation('westcoll', westerncollate)
-    dbfile = path.joinpath(app.home_dir,"customloc.db")
+    dbfile = Path.joinpath(app.home_dir,"customloc.db")
     #customloc_conn = sqlite3.connect(str(dbfile))
     sql = "attach database '%s' as custom" % (dbfile)
     local_conn.execute(sql)
@@ -36,10 +36,10 @@ def easy_connect():
     dbfile = "./db/local.db"
     local_conn = sqlite3.connect(str(dbfile))
     local_conn.create_collation('westcoll', westerncollate)
-    dbfile = path.joinpath(path.expanduser(path('~')),".astronex/charts.db")
+    dbfile = Path.joinpath(Path.expanduser(Path('~')),".astronex/charts.db")
     chart_conn = sqlite3.connect(dbfile)
     chart_conn.create_collation('westcoll', westerncollate)
-    dbfile = path.joinpath(path.expanduser(path('~')),".astronex/customloc.db")
+    dbfile = Path.joinpath(Path.expanduser(Path('~')),".astronex/customloc.db")
     sql = "attach database '%s' as custom" % (dbfile)
     local_conn.execute(sql)
 

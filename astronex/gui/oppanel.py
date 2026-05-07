@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import gtk
-from .. extensions.path import path
+from path import Path
 curr = None
 boss = None
 
@@ -146,7 +146,7 @@ class OpPanel(gtk.VBox):
         appath = boss.app.appath
         button = gtk.RadioButton(self.sections_button_group)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/"+self.images[name]) 
+        imgfile = Path.joinpath(appath,"astronex/resources/"+self.images[name]) 
         img.set_from_file(str(imgfile))
         button.set_image(img)
         button.set_mode(False)
@@ -187,7 +187,7 @@ class OpPanel(gtk.VBox):
         else:
             button = gtk.RadioButton(self.sections_button_group)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/"+self.images[name]) 
+        imgfile = Path.joinpath(appath,"astronex/resources/"+self.images[name]) 
         img.set_from_file(str(imgfile))
         button.set_image(img)
         self.sections_button_group = button.get_group()[0]

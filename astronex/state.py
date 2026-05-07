@@ -4,7 +4,7 @@ from . import database
 from collections import deque
 from .utils import PersonInfo,dectodeg,parsestrtime
 from .nexdate import NeXDate
-from .extensions.path import path
+from path import Path
 import pickle
 
 datlist = deque(['dat_nat','dat_house','dat_nod','prog_nat','prog_nod','prog_local','prog_soul'])
@@ -61,14 +61,14 @@ class Current(object):
         self.curr_list = opdouble
 
         self.pool = deque([])
-        file = path.joinpath(app.home_dir,'mruch.pkl')
-        if path.exists(file):
+        file = Path.joinpath(app.home_dir,'mruch.pkl')
+        if Path.exists(file):
             input = open(file,"rb")
             self.pool = pickle.load(input)
         self.couples = []
         self.coup_ix = 0
-        file = path.joinpath(app.home_dir,'coups.pkl')
-        if path.exists(file):
+        file = Path.joinpath(app.home_dir,'coups.pkl')
+        if Path.exists(file):
             input = open(file,"rb")
             self.couples = pickle.load(input)
 
@@ -283,7 +283,7 @@ class Current(object):
     def save_pool(self,app):
         if len(self.pool) == 0:
             return
-        file = path.joinpath(app.home_dir,'mruch.pkl')
+        file = Path.joinpath(app.home_dir,'mruch.pkl')
         output = open(file, 'wb')
         pickle.dump(self.pool, output,-1)
         output.close()
@@ -291,7 +291,7 @@ class Current(object):
     def save_couples(self,app):
         if len(self.couples) == 0:
             return
-        file = path.joinpath(app.home_dir,'coups.pkl')
+        file = Path.joinpath(app.home_dir,'coups.pkl')
         output = open(file, 'wb')
         pickle.dump(self.couples, output,-1)
         output.close()

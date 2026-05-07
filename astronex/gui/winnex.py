@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys,os
-from .. extensions.path import path
+from path import Path
 import gtk
 from .. surfaces.layoutsurface import DrawMaster
 from .. surfaces.pngsurface import DrawPng
@@ -24,7 +24,7 @@ class WinNex(gtk.Window):
         gtk.Window.__init__(self)
         self.boss = manager
         appath = self.boss.app.appath
-        appath = path.joinpath(appath,"astronex")
+        appath = Path.joinpath(appath,"astronex")
         self.entry = None
         self.locsel = None
         self.locselflag = False
@@ -91,7 +91,7 @@ class WinNex(gtk.Window):
         ti = gtk.ToolButton()
         ti.connect('clicked',self.cb_exit)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/gtk-quit-32.png")
+        imgfile = Path.joinpath(appath,"resources/gtk-quit-32.png")
         img.set_from_file(str(imgfile))
         ti.set_icon_widget(img)
         ti.add_accelerator('clicked',accel_group,ord('q'),gtk.gdk.CONTROL_MASK,gtk.ACCEL_LOCKED)
@@ -192,7 +192,7 @@ class WinNex(gtk.Window):
         self.da.ha = scrolled.get_hadjustment()
         self.da.va = scrolled.get_vadjustment()
 
-        imgfile = path.joinpath(appath,"resources/iconex-22.png")
+        imgfile = Path.joinpath(appath,"resources/iconex-22.png")
         self.set_icon_from_file(str(imgfile))
         scr_width = gtk.gdk.screen_width()
         scr_height = gtk.gdk.screen_height()
@@ -272,12 +272,12 @@ class WinNex(gtk.Window):
         about.set_name("Astro-Nex")
         about.set_version(self.boss.app.version)
         about.set_comments(str(_("Programa de calculo y dibujo de cartas astrologicas segun el metodo API"), "utf-8"))
-        file = path.joinpath(appath,"resources/COPYING")
+        file = Path.joinpath(appath,"resources/COPYING")
         about.set_license(open(file).read())
         about.set_copyright(str("Copyright © 2006","utf-8"))
         about.set_website("http://astro-nex.com")
         about.set_authors([str("Jose Antonio Rodríguez <jar@eideia.net>","utf-8")])
-        imgfile = path.joinpath(appath,"resources/splash.png")
+        imgfile = Path.joinpath(appath,"resources/splash.png")
         logo = gtk.gdk.pixbuf_new_from_file(imgfile)
         about.set_logo(logo)
         about.show_all()

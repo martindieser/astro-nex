@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from .chart import Chart
 from . import database as datab
-from .extensions.path import path
+from path import Path
 
 ccodes = {
 'AF': 'AFG'	,	#Afganistán
@@ -247,7 +247,7 @@ if __name__ == '__main__':
     datab.easy_connect()
     tname = 'personal'
     chunks = export_table(tname)
-    aafile = path.joinpath(path.expanduser(path('~')),"%s.aaf" % tname)
+    aafile = Path.joinpath(Path.expanduser(Path('~')),"%s.aaf" % tname)
     f = open(aafile,'w')
     for ch in chunks:
         f.write(ch.encode('utf-8'))

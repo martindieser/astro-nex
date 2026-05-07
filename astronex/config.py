@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .extensions.path import path
+from path import Path
 import gtk
 from configobj import ConfigObj
 
@@ -64,7 +64,7 @@ cfgcols = {}
 
 def read_config(homedir):
     global cfgcols
-    cfgfile = path.joinpath(homedir,'cfg.ini')
+    cfgfile = Path(home_dir).joinpath('cfg.ini')
     conf = ConfigObj(cfgfile)
     popts = {}
     for k in list(conf.keys()):
@@ -80,7 +80,7 @@ def read_config(homedir):
         val = getattr(opts,keyc)
         cfgcols[keyc] = ''.join(['#',val])
 
-    if not path.exists(cfgfile) or len(opts.__dict__) != popts:
+    if not Path(cfgfile).exists() or len(opts.__dict__) != popts:
         opts.opts_to_config(conf)
         conf.write()
 
@@ -91,7 +91,7 @@ def reload_config(conf,boss):
     opts = boss.opts
     state = boss.state
 
-    ephepath = path.joinpath(opts.home_dir,opts.ephepath)
+    ephepath = Path(opts.home_dir).joinpath(opts.ephepath)
     from pysw import setpath
     setpath(str(ephepath))
 

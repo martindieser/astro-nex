@@ -2,7 +2,7 @@
 import os
 import gtk, gobject
 import cairo, pango
-from .. extensions.path import path
+from path import Path
 
 boss = None
 
@@ -50,8 +50,8 @@ class DrawHelp(gtk.DrawingArea):
     
     def load_pixbufs(self):
         appath = boss.app.appath 
-        appath = path.joinpath(appath,'astronex')
-        imgfile = path.joinpath(appath,"resources/saturn-soft.png")
+        appath = Path.joinpath(appath,'astronex')
+        imgfile = Path.joinpath(appath,"resources/saturn-soft.png")
         return cairo.ImageSurface.create_from_png(imgfile)
 
     def dispatch(self,da,event):

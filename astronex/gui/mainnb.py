@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys,os
 from copy import copy
-from .. extensions.path import path
+from path import Path
 from .. countries import cata_reg
 import gtk
 import pango
@@ -20,8 +20,8 @@ class Slot(gtk.VBox):
         gtk.VBox.__init__(self)
         appath = boss.app.appath
 
-        self.imgfile1 = path.joinpath(appath,"astronex/resources/stock_inbox-24.png")
-        self.imgfile2 = path.joinpath(appath,"astronex/resources/gtk-folder-24.png")
+        self.imgfile1 = Path.joinpath(appath,"astronex/resources/stock_inbox-24.png")
+        self.imgfile2 = Path.joinpath(appath,"astronex/resources/gtk-folder-24.png")
 
         self.wname = id
         self.chart_id = None
@@ -51,7 +51,7 @@ class Slot(gtk.VBox):
         hbutbox = gtk.HBox()
         but = gtk.Button()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/drivel-24.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/drivel-24.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.connect('clicked',self.on_entry_clicked)
@@ -60,7 +60,7 @@ class Slot(gtk.VBox):
         hbutbox.pack_end(but,False,False)
         but = gtk.Button()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/clock-24.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/clock-24.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.connect('clicked',self.on_clock_clicked)
@@ -69,7 +69,7 @@ class Slot(gtk.VBox):
         hbutbox.pack_end(but,False,False)
         ev = gtk.EventBox()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/gnome-eog-24.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/gnome-eog-24.png")
         img.set_from_file(str(imgfile))
         ev.add(img)
         ev.modify_bg(gtk.STATE_NORMAL,gtk.gdk.color_parse("white"))
@@ -297,7 +297,7 @@ class ChartBrowser(gtk.VBox):
         gtk.VBox.__init__(self)
         self.chartview = None
         self.font = font
-        appath = path.joinpath(ap_path,'astronex')
+        appath = Path.joinpath(ap_path,'astronex')
 
         liststore = gtk.ListStore(str)
         self.tables = gtk.ComboBoxEntry(liststore)
@@ -326,7 +326,7 @@ class ChartBrowser(gtk.VBox):
 
         opbut = gtk.Button()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/folder-convert24.png")
+        imgfile = Path.joinpath(appath,"resources/folder-convert24.png")
         img.set_from_file(imgfile)
         opbut.set_image(img)
         opbut.set_tooltip_text(_('Explorador/Tablas'))
@@ -335,7 +335,7 @@ class ChartBrowser(gtk.VBox):
 
         opbut = gtk.Button()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/pgram.png")
+        imgfile = Path.joinpath(appath,"resources/pgram.png")
         img.set_from_file(imgfile)
         opbut.set_image(img)
         opbut.set_tooltip_text(_('Planetograma'))
@@ -576,7 +576,7 @@ class MainPanel(gtk.VBox):
         self.pack_end(self.chooser,True,True)
 
     def make_toolbar(self,appath,boss):
-        appath = path.joinpath(appath,'astronex')
+        appath = Path.joinpath(appath,'astronex')
         tb = gtk.Toolbar()
         tb.set_orientation(gtk.ORIENTATION_VERTICAL)
         tb.set_size_request(-1,24)
@@ -587,7 +587,7 @@ class MainPanel(gtk.VBox):
         tcal = gtk.ToggleToolButton()
         tcal.connect('clicked',self.on_calpanel,boss)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/cal.png")
+        imgfile = Path.joinpath(appath,"resources/cal.png")
         img.set_from_file(str(imgfile))
         tcal.set_icon_widget(img)
         tcal.set_tooltip_text(_("Calendario"))
@@ -596,7 +596,7 @@ class MainPanel(gtk.VBox):
         tpe = gtk.ToggleToolButton()
         tpe.connect('clicked',self.on_pebut,boss)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/ap.png")
+        imgfile = Path.joinpath(appath,"resources/ap.png")
         img.set_from_file(str(imgfile))
         tpe.set_icon_widget(img)
         tpe.set_tooltip_text(_("Punto Edad"))
@@ -605,7 +605,7 @@ class MainPanel(gtk.VBox):
         twin = gtk.ToolButton()
         twin.connect('clicked',self.on_auxwin,boss)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/new-win.png")
+        imgfile = Path.joinpath(appath,"resources/new-win.png")
         img.set_from_file(str(imgfile))
         twin.set_icon_widget(img)
         twin.set_tooltip_text(_("Ventana auxiliar"))
@@ -614,7 +614,7 @@ class MainPanel(gtk.VBox):
         tasp = gtk.ToggleToolButton()
         tasp.connect('clicked',self.on_plsel,boss)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/aspects.png")
+        imgfile = Path.joinpath(appath,"resources/aspects.png")
         img.set_from_file(str(imgfile))
         tasp.set_icon_widget(img)
         tasp.set_tooltip_text(_("Selector de aspectos"))
@@ -623,7 +623,7 @@ class MainPanel(gtk.VBox):
         tcyc = gtk.ToggleToolButton()
         tcyc.connect('clicked',self.on_cycles,boss)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/cycles2.png")
+        imgfile = Path.joinpath(appath,"resources/cycles2.png")
         img.set_from_file(str(imgfile))
         tcyc.set_icon_widget(img)
         tcyc.set_tooltip_text(_("Selector de ciclos"))
@@ -632,7 +632,7 @@ class MainPanel(gtk.VBox):
         tdia = gtk.ToggleToolButton()
         tdia.connect('clicked',self.on_diada,boss)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/subdia.png")
+        imgfile = Path.joinpath(appath,"resources/subdia.png")
         img.set_from_file(str(imgfile))
         tdia.set_icon_widget(img)
         tdia.set_tooltip_text(_("Diagramas"))
@@ -641,7 +641,7 @@ class MainPanel(gtk.VBox):
         tdia = gtk.ToggleToolButton()
         tdia.connect('clicked',self.on_pebridge,boss)
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"resources/bridge.png")
+        imgfile = Path.joinpath(appath,"resources/bridge.png")
         img.set_from_file(str(imgfile))
         tdia.set_icon_widget(img)
         tdia.set_tooltip_text(_("PE puente"))

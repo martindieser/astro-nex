@@ -2,7 +2,7 @@
 import gtk
 import sys,os,re
 import pickle 
-from .. extensions.path import path
+from path import Path
 from .searchview import SearchView
 
 curr = None
@@ -83,7 +83,7 @@ class MixerPanel(gtk.HBox):
         but = gtk.Button()
         img = gtk.Image()
         appath = boss.app.appath
-        imgfile = path.joinpath(appath,"astronex/resources/refresh-18.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/refresh-18.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.connect('clicked',self.on_refresh_clicked,tables)
@@ -319,7 +319,7 @@ class MixerPanel(gtk.HBox):
 
         hbox = gtk.HBox()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/gtk-new-18.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/gtk-new-18.png")
         img.set_from_file(imgfile)
         hbox.pack_start(img)
         but = gtk.Button(_('_Crear tabla'))
@@ -329,7 +329,7 @@ class MixerPanel(gtk.HBox):
         
         hbox = gtk.HBox()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/stock_delete.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/stock_delete.png")
         img.set_from_file(imgfile)
         hbox.pack_start(img)
         but = gtk.Button(_('E_liminar tabla'))
@@ -339,7 +339,7 @@ class MixerPanel(gtk.HBox):
         
         hbox = gtk.HBox()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/gtk-convert-18.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/gtk-convert-18.png")
         img.set_from_file(imgfile)
         hbox.pack_start(img)
         but = gtk.Button(_('_Renombrar'))

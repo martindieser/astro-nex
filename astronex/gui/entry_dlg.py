@@ -5,7 +5,7 @@ from .datewidget import DateEntry
 from .localwidget import LocWidget
 from datetime import datetime, time
 from .. utils import parsestrtime
-from .. extensions.path import path
+from path import Path
 from .mainnb import Slot
 from copy import copy
 curr = None
@@ -72,7 +72,7 @@ class EntryDlg(gtk.Dialog):
         hbox = gtk.HBox()
         but = gtk.Button()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/stock_refresh.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/stock_refresh.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         hbox.pack_start(but,False,False)
@@ -80,7 +80,7 @@ class EntryDlg(gtk.Dialog):
         
         but = gtk.Button()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/gtk-clear.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/gtk-clear.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         hbox.pack_start(but,False,False)
@@ -88,7 +88,7 @@ class EntryDlg(gtk.Dialog):
         
         but = gtk.Button()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/gtk-cancel.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/gtk-cancel.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.set_size_request(80,-1)
@@ -97,7 +97,7 @@ class EntryDlg(gtk.Dialog):
         
         but = gtk.Button()
         img = gtk.Image()
-        imgfile = path.joinpath(appath,"astronex/resources/gtk-save.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/gtk-save.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.set_size_request(80,-1)

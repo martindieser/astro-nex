@@ -2,7 +2,7 @@
 import os
 import gtk,pango
 from configobj import ConfigObj
-from .. extensions.path import path
+from path import Path
 from .localwidget import LocWidget 
 from itertools importcount
 from configobj import ConfigObj
@@ -24,7 +24,7 @@ class ConfigDlg(gtk.Dialog):
 
     def __init__(self,parent):
         opts = boss.opts
-        self.config_file = path.joinpath(boss.home_dir,boss.config_file)
+        self.config_file = Path.joinpath(boss.home_dir,boss.config_file)
 
         gtk.Dialog.__init__(self,
                 _("Configuracion"), parent,

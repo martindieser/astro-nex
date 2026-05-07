@@ -10,7 +10,7 @@ from .. utils import parsestrtime
 from .mixer import MixerPanel
 from .import_dlg import ImportPanel
 from .couples import CouplesPanel
-from .. extensions.path import path
+from path import Path
 from .searchview import SearchView
 
 boss = None
@@ -130,7 +130,7 @@ class  BrowserPanel(gtk.HBox):
         but = gtk.Button()
         img = gtk.Image()
         appath = boss.app.appath
-        imgfile = path.joinpath(appath,"astronex/resources/refresh-18.png")
+        imgfile = Path.joinpath(appath,"astronex/resources/refresh-18.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.connect('clicked',self.on_refresh_clicked,self.tables)

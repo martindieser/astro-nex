@@ -3,7 +3,7 @@ import gtk
 import os
 import re
 from itertools importcount
-from .. extensions.path import path
+from path import Path
 from .. extensions.validation import MaskEntry
 from .. utils import degtodec 
 from .localwidget import LocWidget
