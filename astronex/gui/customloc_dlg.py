@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import gtk
+from astronex.compat import Gtk, Gdk, GObject, pango, cairo
 import os
 import re
-from itertools importcount
+from itertools import count
 from path import Path
 from .. extensions.validation import MaskEntry
 from .. utils import degtodec 
@@ -13,45 +13,45 @@ curr = boss.get_state()
 datab = boss.get_database()
 
 
-class CustomLocDlg(gtk.Dialog):
+class CustomLocDlg(Gtk.Dialog):
     def __init__(self,boss):
-        gtk.Dialog.__init__(self,
+        Gtk.Dialog.__init__(self,
                 _("Anadir localidad"), None,
-                gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
-                    (gtk.STOCK_SAVE, gtk.RESPONSE_OK,
-                gtk.STOCK_CLOSE, gtk.RESPONSE_NONE))
+                Gtk.DialogFlags.MODAL|Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                    (Gtk.STOCK_SAVE, Gtk.ResponseType.OK,
+                Gtk.STOCK_CLOSE, Gtk.ResponseType.NONE))
         self.set_size_request(400,500)
 
         self.widget = CustomLocWidget(self)
-        frame = gtk.Frame()
+        frame = Gtk.Frame()
         frame.add(self.widget)
-        self.vbox.pack_start(frame,False,False)
+        self.get_content_area().pack_start(frame,False,False,0)
         
-        hbox = gtk.HBox()
-        but = gtk.Button(_('Eliminar entrada'))
+        hbox = Gtk.HBox()
+        but = Gtk.Button(label=_('Eliminar entrada'))
         but.connect('clicked',self.on_delete_entry)
-        hbox.pack_start(but,False,False)
-        but = gtk.Button(_('Modificar entrada'))
+        hbox.pack_start(but,False,False,0)
+        but = Gtk.Button(label=_('Modificar entrada'))
         but.connect('clicked',self.on_modify_entry)
-        hbox.pack_end(but,False,False)
-        self.vbox.pack_start(hbox,False,False)
-        self.vbox.pack_start(gtk.HSeparator(),False,False) 
-        sw = gtk.ScrolledWindow()
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC) 
+        hbox.pack_end(but,False,False,0)
+        self.get_content_area().pack_start(hbox,False,False,0)
+        self.get_content_area().pack_start(Gtk.HSeparator(),False,False,0) 
+        sw = Gtk.ScrolledWindow()
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC) 
         view = self.make_browser()
         sw.add(view) 
         self.locview = view
-        self.vbox.pack_start(sw,True,True)
+        self.get_content_area().pack_start(sw,True,True,0)
 
         self.connect("response", self.dlg_response)
-        self.set_response_sensitive(gtk.RESPONSE_OK,False)
+        self.set_response_sensitive(Gtk.ResponseType.OK,False)
         self.show_all()
 
     def dlg_response(self,dialog,rid):
-        if rid == gtk.RESPONSE_OK:
+        if rid == Gtk.ResponseType.OK:
             resp = self.widget.pack_response()
             datab.save_attached_loc(resp)
-            locmodel = gtk.ListStore(str,str,str,str,str) 
+            locmodel = Gtk.ListStore(str,str,str,str,str) 
             loclist = datab.fetch_all_from_custom() 
             for n,c in enumerate(loclist):
                 locmodel.append(c)
@@ -64,12 +64,12 @@ class CustomLocDlg(gtk.Dialog):
         model,iter = self.locview.get_selection().get_selected()
         if not iter: return
         result = self.deletedialog()
-        if result == gtk.RESPONSE_OK:
+        if result == Gtk.ResponseType.OK:
             city = model.get_value(iter,0)
             code = model.get_value(iter,1)
             table = model.get_value(iter,3) 
             datab.delete_custom_loc(table,city,code)
-            locmodel = gtk.ListStore(str,str,str,str,str) 
+            locmodel = Gtk.ListStore(str,str,str,str,str) 
             loclist = datab.fetch_all_from_custom() 
             for n,c in enumerate(loclist):
                 locmodel.append(c)
@@ -78,9 +78,9 @@ class CustomLocDlg(gtk.Dialog):
     def deletedialog(self):
         msg = [_("Eliminar una localidad puede impedir modificar "),
             _("luego una carta con facilidad. Continuar?")]
-        dialog = gtk.MessageDialog(None, gtk.DIALOG_MODAL,
-                gtk.MESSAGE_WARNING,
-                gtk.BUTTONS_OK_CANCEL, "\n".join(msg))
+        dialog = Gtk.MessageDialog(transient_for=None, flags=Gtk.DialogFlags.MODAL,
+                type=Gtk.MessageType.WARNING,
+                buttons=Gtk.ButtonsType.OK_CANCEL, message_format="\n".join(msg))
         result = dialog.run()
         dialog.destroy()
         return result
@@ -94,17 +94,17 @@ class CustomLocDlg(gtk.Dialog):
         table = model.get_value(iter,3) 
         count  = model.get_value(iter,4) 
         self.widget.locentry.set_text(city)
-        self.widget.country_combo.child.set_text(count)
-        int,lat = geo.split(' ')
-        d,L,m = int.partition('E')
+        self.widget.country_combo.get_child().set_text(count)
+        int_part,lat_part = geo.split(' ')
+        d,L,m = int_part.partition('E')
         if L == '':
-            d,L,m = int.partition('W') 
+            d,L,m = int_part.partition('W') 
         self.widget.gcombos[0].set_active(['E','W'].index(L))
         self.widget.gentries[0].set_text(".".join([d.rjust(3,'0'),m,'00']))
         L = ''
-        d,L,m = lat.partition('N')
+        d,L,m = lat_part.partition('N')
         if L == '':
-            d,L,m = lat.partition('S') 
+            d,L,m = lat_part.partition('S') 
         self.widget.gcombos[1].set_active(['N','S'].index(L)) 
         self.widget.gentries[1].set_text(".".join([d,m,'00']))
         _, count = table.split('_')
@@ -121,27 +121,27 @@ class CustomLocDlg(gtk.Dialog):
                 break
 
     def make_browser(self):
-        locmodel = gtk.ListStore(str,str,str,str,str)
-        locview = gtk.TreeView(locmodel)
+        locmodel = Gtk.ListStore(str,str,str,str,str)
+        locview = Gtk.TreeView(model=locmodel)
         selection = locview.get_selection()
-        selection.set_mode(gtk.SELECTION_SINGLE)
+        selection.set_mode(Gtk.SelectionMode.SINGLE)
         loclist = datab.fetch_all_from_custom() 
         for n,c in enumerate(loclist):
             locmodel.append(c)
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         cell.set_property('width-chars',26)
         cell.set_property('foreground','blue')
-        cellgeo = gtk.CellRendererText()
-        cellcount = gtk.CellRendererText()
-        column = gtk.TreeViewColumn(None)
+        cellgeo = Gtk.CellRendererText()
+        cellcount = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn(None)
         column.pack_start(cell,False)
         column.pack_start(cellgeo,False)
         column.pack_start(cellcount,False)
         column.set_attributes(cell,text=0)
         column.set_attributes(cellgeo,text=2)
         column.set_attributes(cellcount,text=4)
-        column.set_widget(gtk.HSeparator())
+        column.set_widget(Gtk.HSeparator())
         locview.append_column(column) 
         locview.set_headers_visible(False)
         #locview.connect('row-activated',self.on_row_activate)
@@ -151,16 +151,16 @@ def filter_region(model,iter,code):
     value = model.get_value(iter,1)
     return value == code 
 
-class CustomLocWidget(gtk.VBox):
+class CustomLocWidget(Gtk.VBox):
     def __init__(self,dialog):
-        gtk.VBox.__init__(self)
+        Gtk.VBox.__init__(self)
         self.set_homogeneous(False)
         self.dialog = dialog
         self.usa = False
 
         self.countries = datab.get_states()
         self.countrycode = curr.country
-        compl = gtk.EntryCompletion()
+        compl = Gtk.EntryCompletion()
         
         region = curr.loc.region
         city = curr.loc.city
@@ -171,31 +171,33 @@ class CustomLocWidget(gtk.VBox):
         default = self.sortlist.index(revlist[self.countrycode])
         
         # country label and check btns 
-        hbox = gtk.HBox()
+        hbox = Gtk.HBox()
         hbox.set_border_width(4)
-        label1 = gtk.Label(_('Pais')+"      ")
-        label2 = gtk.Label(_('Region'))
+        label1 = Gtk.Label(label=_('Pais')+"      ")
+        label2 = Gtk.Label(label=_('Region'))
         hbox.pack_start(label1,False,False,padding=8)
-        self.check = gtk.CheckButton("Usa")
+        self.check = Gtk.CheckButton(label="Usa")
         self.check.connect('toggled',self.on_usa_toggled,compl,default,label1)
-        hbox.pack_start(self.check,False,False)
+        hbox.pack_start(self.check,False,False,0)
         hbox.pack_end(label2,False,False,padding=8)
-        self.pack_start(hbox,False,False)
+        self.pack_start(hbox,False,False,0)
 
         # country combo
-        hbox = gtk.HBox()
+        hbox = Gtk.HBox()
         hbox.set_border_width(6)
-        liststore = gtk.ListStore(str)
-        self.country_combo = gtk.ComboBoxEntry(liststore)
-        cell = gtk.CellRendererText()
-        self.country_combo.pack_start(cell)
+        liststore = Gtk.ListStore(str)
+        self.country_combo = Gtk.ComboBox.new_with_model_and_entry(liststore)
+        # self.country_combo.set_model(liststore)
+        self.country_combo.set_entry_text_column(0)
+        cell = Gtk.CellRendererText()
+        self.country_combo.pack_start(cell, True)
         
         for c in self.sortlist:
             liststore.append([c])
         
         compl.set_text_column(0)
         compl.set_model(self.country_combo.get_model())
-        entry = self.country_combo.child
+        entry = self.country_combo.get_child()
         entry.set_completion(compl)
         compl.connect('match_selected', self.on_count_match)
 
@@ -203,13 +205,15 @@ class CustomLocWidget(gtk.VBox):
         self.country_combo.set_wrap_width(4)
         self.country_combo.connect('changed',self.on_count_selected)
 
-        hbox.pack_start(self.country_combo,False,False)
+        hbox.pack_start(self.country_combo,False,False,0)
 
         # region combo
-        liststore = gtk.ListStore(str,str)
-        self.reg_combo = gtk.ComboBoxEntry(liststore)
-        cell = gtk.CellRendererText()
-        self.reg_combo.pack_start(cell)
+        liststore = Gtk.ListStore(str,str)
+        self.reg_combo = Gtk.ComboBox.new_with_model_and_entry(liststore)
+        # self.reg_combo.set_model(liststore)
+        self.reg_combo.set_entry_text_column(0)
+        cell = Gtk.CellRendererText()
+        self.reg_combo.pack_start(cell, True)
         self.reg_combo.connect('changed',self.on_reg_selected)
         rlist = datab.list_regions(self.countrycode)
         if self.countrycode == "SP" and boss.opts.lang == 'ca':
@@ -225,45 +229,45 @@ class CustomLocWidget(gtk.VBox):
                 i = n
 
         self.reg_combo.set_active(i)
-        hbox.pack_end(self.reg_combo,False,False)
-        self.pack_start(hbox,False,False)
+        hbox.pack_end(self.reg_combo,False,False,0)
+        self.pack_start(hbox,False,False,0)
 
         # entries
-        table= gtk.Table(3,3)
+        table= Gtk.Table(n_rows=3, n_columns=3)
         table.set_border_width(6)
         table.set_col_spacings(6)
-        label = gtk.Label(_("Localidad"))
+        label = Gtk.Label(label=_("Localidad"))
         label.set_alignment(1.0,0.5)
         table.attach(label,0,1,0,1)
-        label = gtk.Label(_("Longitud"))
+        label = Gtk.Label(label=_("Longitud"))
         label.set_alignment(1.0,0.5)
         table.attach(label,0,1,1,2)
-        label = gtk.Label(_("Latitud"))
+        label = Gtk.Label(label=_("Latitud"))
         label.set_alignment(1.0,0.5)
         table.attach(label,0,1,2,3)
 
-        locname = gtk.Entry()
+        locname = Gtk.Entry()
         table.attach(locname,1,3,0,1)
         locname.connect('changed',self.on_locname_changed)
         self.locentry = locname
         
         self.gentries = []
         self.longdeg = "0"
-        long = MaskEntry()
-        int.set_mask("000.00.00")
-        mask = int.get_mask()
-        int.set_width_chars(len(mask))
-        int.set_text("000.00.00")
-        int.connect("changed",self.on_geoentry_changed,'long')
-        table.attach(int,1,2,1,2)
-        self.gentries.append(int)
+        long_entry = MaskEntry()
+        long_entry.set_mask("000.00.00")
+        mask = long_entry.get_mask()
+        long_entry.set_width_chars(len(mask))
+        long_entry.set_text("000.00.00")
+        long_entry.connect("changed",self.on_geoentry_changed,'long')
+        table.attach(long_entry,1,2,1,2)
+        self.gentries.append(long_entry)
         
         self.gcombos = []
-        store = gtk.ListStore(str)
+        store = Gtk.ListStore(str)
         store.append([_('E')])
         store.append([_('W')])
-        combo = gtk.ComboBox(store)
-        cell = gtk.CellRendererText()
+        combo = Gtk.ComboBox(model=store)
+        cell = Gtk.CellRendererText()
         combo.pack_start(cell,True)
         combo.add_attribute(cell,'text',0)
         combo.set_size_request(40,-1)
@@ -274,20 +278,20 @@ class CustomLocWidget(gtk.VBox):
         self.gcombos.append(combo)
         
         self.latdeg = "0"
-        lat = MaskEntry()
-        lat.set_mask("00.00.00")
-        mask = lat.get_mask()
-        lat.set_width_chars(len(mask))
-        lat.set_text("00.00.00")
-        lat.connect("changed",self.on_geoentry_changed,'lat')
-        table.attach(lat,1,2,2,3)
-        self.gentries.append(lat)
+        lat_entry = MaskEntry()
+        lat_entry.set_mask("00.00.00")
+        mask = lat_entry.get_mask()
+        lat_entry.set_width_chars(len(mask))
+        lat_entry.set_text("00.00.00")
+        lat_entry.connect("changed",self.on_geoentry_changed,'lat')
+        table.attach(lat_entry,1,2,2,3)
+        self.gentries.append(lat_entry)
 
-        store = gtk.ListStore(str)
+        store = Gtk.ListStore(str)
         store.append([_('N')])
         store.append([_('S')])
-        combo = gtk.ComboBox(store)
-        cell = gtk.CellRendererText()
+        combo = Gtk.ComboBox(model=store)
+        cell = Gtk.CellRendererText()
         combo.pack_start(cell,True)
         combo.add_attribute(cell,'text',0)
         combo.set_size_request(40,-1)
@@ -297,7 +301,7 @@ class CustomLocWidget(gtk.VBox):
         table.attach(combo,2,3,2,3)
         self.gcombos.append(combo)
         
-        self.pack_start(table,False,False)
+        self.pack_start(table,False,False,0)
 
 
     def on_reg_selected(self,combo):
@@ -311,10 +315,10 @@ class CustomLocWidget(gtk.VBox):
                 self.locview.set_model(filtmodel)
 
     def on_count_selected(self,combo):
-        sel = str(combo.get_active_text(),"utf-8")
+        sel = combo.get_active_text()
         try:
             code = self.countries[sel]
-            liststore = gtk.ListStore(str,str)
+            liststore = Gtk.ListStore(str,str)
             rlist = datab.list_regions(code,self.usa)
             for r in rlist:
                 liststore.append(r)
@@ -328,7 +332,7 @@ class CustomLocWidget(gtk.VBox):
             self.countrycode = code 
 
     def on_count_match(self,compl,model,iter):
-        sel = str(model.get_value(iter,0),"utf-8")
+        sel = model.get_value(iter,0)
         sl = self.sortlist
         self.country_combo.set_active(sl.index(sel))
 
@@ -344,7 +348,7 @@ class CustomLocWidget(gtk.VBox):
             default = dfl
             lbl.set_text(_("Pais"))
         self.sortlist = sorted(self.countries.keys())
-        model = gtk.ListStore(str)
+        model = Gtk.ListStore(str)
         for c in self.sortlist:
             model.append([c])
         self.country_combo.set_model(model)
@@ -388,11 +392,11 @@ class CustomLocWidget(gtk.VBox):
     def on_locname_changed(self,entry):
         locname = entry.get_text()
         if not re.match("^\w(\w|-\s)*",locname, re.U):
-            self.dialog.set_response_sensitive(gtk.RESPONSE_OK,False)
+            self.dialog.set_response_sensitive(Gtk.ResponseType.OK,False)
             entry.set_text("")
         else:
             self.locname = locname
-            self.dialog.set_response_sensitive(gtk.RESPONSE_OK,True)
+            self.dialog.set_response_sensitive(Gtk.ResponseType.OK,True)
 
     def pack_response(self):
         if self.locname == "":

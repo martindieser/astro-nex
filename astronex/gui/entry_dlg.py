@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import gtk
+from astronex.compat import Gtk, Gdk, GObject, pango, cairo
 from pytz import timezone
 from .datewidget import DateEntry
 from .localwidget import LocWidget
@@ -10,30 +10,30 @@ from .mainnb import Slot
 from copy import copy
 curr = None
 
-class PersonTable(gtk.Table):
+class PersonTable(Gtk.Table):
     def __init__(self,current):
         global curr
         curr = current
-        gtk.Table.__init__(self,2,2)
-        lbl = gtk.Label(_('Nombre:'))
+        Gtk.Table.__init__(self,n_rows=2,n_columns=2)
+        lbl = Gtk.Label(label=_('Nombre:'))
         self.attach(lbl,0,1,0,1)
-        lbl = gtk.Label(_('Apellidos:'))
+        lbl = Gtk.Label(label=_('Apellidos:'))
         self.attach(lbl,0,1,1,2)
-        self.first = gtk.Entry()
+        self.first = Gtk.Entry()
         self.first.connect('changed', self.on_changed,curr)
         self.attach(self.first,1,2,0,1)
-        self.last = gtk.Entry()
+        self.last = Gtk.Entry()
         self.last.connect('changed', self.on_changed,curr)
         self.attach(self.last,1,2,1,2)
         self.set_border_width(3) 
 
     def on_changed(self,w,curr):
         if w is self.first:      
-            curr.person.first = str(w.get_text(),"utf-8")           
+            curr.person.first = w.get_text()           
         elif w is self.last:
-            curr.person.last =  str(w.get_text(),"utf-8")
+            curr.person.last =  w.get_text()
 
-class EntryDlg(gtk.Dialog):
+class EntryDlg(Gtk.Dialog):
     '''New chart inputs dialog'''
 
     def __init__(self,parent,calc=False):
@@ -46,68 +46,68 @@ class EntryDlg(gtk.Dialog):
         appath = self.boss.app.appath
         self.last_loaded = None
         
-        gtk.Dialog.__init__(self,
-                _("Entradas"), parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                ())
+        Gtk.Dialog.__init__(self,
+                title=_("Entradas"), transient_for=parent,
+                flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                buttons=())
         self.connect('configure-event', self.on_configure_event) 
 
         self.set_size_request(400,580)
-        self.vbox.set_border_width(3)
+        self.get_content_area().set_border_width(3)
         
         if curr.curr_op != 'draw_local': 
-            self.pframe = gtk.Frame(_("Personal"))
+            self.pframe = Gtk.Frame(label=_("Personal"))
             self.pframe.set_border_width(3)
             self.pframe.add(PersonTable(curr))
-            self.vbox.pack_start(self.pframe,False,False)
+            self.get_content_area().pack_start(self.pframe,False,False,0)
             
             dw = self.create_datewidget()
-            self.vbox.pack_start(dw,False)
-            self.dw = dw.child
+            self.get_content_area().pack_start(dw,False,False,0)
+            self.dw = dw.get_child()
         
         loc = self.create_locwidget()
-        self.vbox.pack_start(loc)
-        self.loc = loc.child 
+        self.get_content_area().pack_start(loc,True,True,0)
+        self.loc = loc.get_child() 
         
-        hbox = gtk.HBox()
-        but = gtk.Button()
-        img = gtk.Image()
+        hbox = Gtk.HBox()
+        but = Gtk.Button()
+        img = Gtk.Image()
         imgfile = Path.joinpath(appath,"astronex/resources/stock_refresh.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
-        hbox.pack_start(but,False,False)
+        hbox.pack_start(but,False,False,0)
         but.connect('clicked',self.on_refesh_clicked)
         
-        but = gtk.Button()
-        img = gtk.Image()
+        but = Gtk.Button()
+        img = Gtk.Image()
         imgfile = Path.joinpath(appath,"astronex/resources/gtk-clear.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
-        hbox.pack_start(but,False,False)
+        hbox.pack_start(but,False,False,0)
         but.connect('clicked',self.on_clear_clicked)
         
-        but = gtk.Button()
-        img = gtk.Image()
+        but = Gtk.Button()
+        img = Gtk.Image()
         imgfile = Path.joinpath(appath,"astronex/resources/gtk-cancel.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.set_size_request(80,-1)
         but.connect("clicked", self.dlg_response,self,'cancel',parent)
-        hbox.pack_end(but,False,False)
+        hbox.pack_end(but,False,False,0)
         
-        but = gtk.Button()
-        img = gtk.Image()
+        but = Gtk.Button()
+        img = Gtk.Image()
         imgfile = Path.joinpath(appath,"astronex/resources/gtk-save.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.set_size_request(80,-1)
         but.connect("clicked", self.dlg_response,self,'save',parent)
-        hbox.pack_end(but,False,False)
-        self.vbox.pack_end(hbox,False,False)
+        hbox.pack_end(but,False,False,0)
+        self.get_content_area().pack_end(hbox,False,False,0)
         self.connect("response", self.quit_response,parent)
         self.show_all()
         
-        wpos = self.window.get_position()
+        wpos = self.get_window().get_position()
         self.pos_x = wpos[0]
         self.pos_y = wpos[1]
 
@@ -162,14 +162,14 @@ class EntryDlg(gtk.Dialog):
         dw.set_time(ld.time())
         dw.set_border_width(3) 
         
-        frame = gtk.Frame(_("Fecha y hora"))
+        frame = Gtk.Frame(label=_("Fecha y hora"))
         frame.set_border_width(3)
         frame.add(dw)
         return frame
    
     def create_locwidget(self):
         loc = LocWidget()
-        frame = gtk.Frame(_("Localidad"))
+        frame = Gtk.Frame(label=_("Localidad"))
         frame.set_border_width(3)
         frame.add(loc)
         return frame
@@ -177,7 +177,7 @@ class EntryDlg(gtk.Dialog):
     def modify_entries(self,chart): 
         self.last_loaded = chart
         if curr and curr.curr_op != 'draw_local': 
-            table = self.pframe.child
+            table = self.pframe.get_child()
             table.first.set_text(chart.first)
             table.last.set_text(chart.last)
             date,thistime = parsestrtime(chart.date)
@@ -201,7 +201,7 @@ class EntryDlg(gtk.Dialog):
             if r[0] == state:
                 loc.country_combo.set_active_iter(r.iter)
                 break 
-        loc.reg_combo.child.set_text(reg)
+        loc.reg_combo.get_child().set_text(reg)
         
         model = loc.locview.get_model()
         iter = model.get_iter("0"); i = 0

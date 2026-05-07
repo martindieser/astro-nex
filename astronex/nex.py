@@ -6,28 +6,19 @@ import gettext
 import atexit
 from . import countries
 from .config import read_config
-lang_es = gettext.translation('astronex','./astronex/locale', languages=['es'])
-lang_en = gettext.translation('astronex','./astronex/locale', languages=['en'])
-lang_ca = gettext.translation('astronex','./astronex/locale', languages=['ca'])
-lang_de = gettext.translation('astronex','./astronex/locale', languages=['de'])
+lang_es = gettext.translation('astronex','./astronex/translations', languages=['es'])
+lang_en = gettext.translation('astronex','./astronex/translations', languages=['en'])
+lang_ca = gettext.translation('astronex','./astronex/translations', languages=['ca'])
+lang_de = gettext.translation('astronex','./astronex/translations', languages=['de'])
 langs = { 'en': lang_en, 'es': lang_es, 'ca': lang_ca, 'de': lang_de }
 
+from astronex.compat import Gtk, Gdk, GObject, GdkPixbuf
 from path import Path
 version = "1.2"
 
 def die(message):
     """Die in a command line way."""
     sys.exit(1)
-
-try:
-    import gtk
-    import gobject
-    if gtk.pygtk_version < (2, 8):
-        die('Astro-Nex requires PyGTK >= 2.8. It only found %s.%s'
-                % gtk.pygtk_version[:2])
-except ImportError:
-    die('Astro-Nex requires Python GTK bindings. They were not found.')
-
 
 # Python 2.5
 if sys.version_info < (2,5):
@@ -95,16 +86,16 @@ def init_config(homedir,opts,state):
         state.transits.append(float(l))
     opts.discard = [ int(x) for x in opts.discard ]
 
-class Splash (gtk.Window):
+class Splash (Gtk.Window):
     def __init__(self,appath):
-        gtk.Window.__init__(self,gtk.WINDOW_POPUP)
+        Gtk.Window.__init__(self,Gtk.WindowType.POPUP)
         self.set_default_size(400, 250)
-        self.set_position (gtk.WIN_POS_CENTER)
-        vbox = gtk.VBox()
-        img = gtk.Image()
+        self.set_position (Gtk.WindowPosition.CENTER)
+        vbox = Gtk.VBox()
+        img = Gtk.Image()
         splashimg = Path.joinpath(appath,"astronex/resources/splash.png")
-        img.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(splashimg))
-        vbox.pack_start(img)
+        img.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(splashimg))
+        vbox.pack_start(img, True, True, 0)
         self.add(vbox)
 
 def init_ipshell():
@@ -148,9 +139,9 @@ class application(object):
         """Start Nex"""
         splash = Splash(self.appath)
         splash.show_all()
-        gobject.timeout_add(1000, splash.hide) # 5*1000 miliseconds
-        gobject.idle_add(self.setup_app)
-        gtk.main()
+        GObject.timeout_add(1000, splash.hide) # 5*1000 miliseconds
+        GObject.idle_add(self.setup_app)
+        Gtk.main()
 
     def run_console(self):
         opts = read_config(self.home_dir)
@@ -186,7 +177,7 @@ class application(object):
 
     def stop(self):
         """Stop Nex."""
-        gtk.main_quit()
+        Gtk.main_quit()
 
 def main(appath,console=False):
     check_home_dir(appath)

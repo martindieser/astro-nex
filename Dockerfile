@@ -38,7 +38,7 @@ USER root
 COPY ext/ /app/ext/
 RUN mkdir -p /usr/local/lib/pysw && \
     cd /app/ext/ext64 && \
-    swig -python pysw.i && \
+    swig -python -py3 pysw.i && \
     gcc -O2 -fPIC -c pysw_wrap.c -I/usr/include/python3 -I$(python3 -c "import sysconfig; print(sysconfig.get_path('include'))") && \
     gcc -shared pysw_wrap.o -o _pysw.so -L. -lswe -lm && \
     cp pysw.py /usr/local/lib/pysw/pysw.py && \

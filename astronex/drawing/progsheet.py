@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import cairo
-import pango
+from astronex.compat import cairo, pango, pangocairo
 from .. chart import zodnames,planames,aspnames
 from .roundedcharts import NodalChart,SoulChart,LocalChart
 from .. boss import boss
@@ -67,7 +66,7 @@ class ProgMixin(object):
         hm = 50; vm = 110
         year = prev_y = ""
         
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)
@@ -169,7 +168,7 @@ class ProgMixin(object):
             cr.new_path()
             
     def cross_points(self,cr):
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)

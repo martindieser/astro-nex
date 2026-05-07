@@ -59,7 +59,7 @@ def parsestrtime(strdate):
         
 
 def format_longitud(long):
-    longitud = dectodeg(int)[:-2]
+    longitud = dectodeg(long)[:-2]
     if longitud[0] == '-':
         let = 'W'
         longitud = longitud[1:]

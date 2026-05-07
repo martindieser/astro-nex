@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import gtk
-import cairo, pango
+from astronex.compat import Gtk, Gdk, GObject, pango, cairo, pangocairo
 from copy import copy
 from .. drawing.coredraw import CoreMixin
 from .. drawing.dispatcher import DrawMixin, AspectManager
@@ -18,15 +17,15 @@ curr = None
 chart =  None
 MainPanel = None
 
-class ChartBrowserWindow(gtk.Window):
+class ChartBrowserWindow(Gtk.Window):
     def __init__(self,parent):
         global boss, curr, chart, MainPanel
         boss = parent.boss
         curr = parent.boss.get_state()
         chart = curr.newchart()
         MainPanel = parent.mpanel.__class__
-        gtk.Window.__init__(self)
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
+        Gtk.Window.__init__(self)
+        self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         self.set_transient_for(parent)
         #self.set_modal(True)
         self.set_destroy_with_parent(True)
@@ -35,34 +34,34 @@ class ChartBrowserWindow(gtk.Window):
         self.connect('focus-out-event', self.on_state)
         self.connect('configure-event', self.on_configure_event) 
 
-        accel_group = gtk.AccelGroup()
-        accel_group.connect_group(gtk.keysyms.Escape,0,gtk.ACCEL_LOCKED,self.escape)
+        accel_group = Gtk.AccelGroup()
+        accel_group.connect(Gdk.KEY_Escape,0,Gtk.AccelFlags.LOCKED,self.escape)
         self.add_accel_group(accel_group) 
         
-        notebook = gtk.Notebook()
-        notebook.set_tab_pos(gtk.POS_LEFT)
+        notebook = Gtk.Notebook()
+        notebook.set_tab_pos(Gtk.PositionType.LEFT)
         notebook.connect('switch-page',self.page_select)
 
-        label = gtk.Label(_("Explorador"))
+        label = Gtk.Label(_("Explorador"))
         label.set_angle(90)
         notebook.append_page(BrowserPanel(parent),label)
         
-        label = gtk.Label(_("Mezclador"))
+        label = Gtk.Label(_("Mezclador"))
         label.set_angle(90)
         notebook.append_page(MixerPanel(parent),label)
 
-        label = gtk.Label(_("Importacion AAF"))
+        label = Gtk.Label(_("Importacion AAF"))
         label.set_angle(90)
         notebook.append_page(ImportPanel(parent),label)
 
-        label = gtk.Label(_("Parejas"))
+        label = Gtk.Label(_("Parejas"))
         label.set_angle(90)
         notebook.append_page(CouplesPanel(parent),label)
         
         self.add(notebook)
         self.set_default_size(650,400)
         self.show_all()
-        wpos = self.window.get_position()
+        wpos = self.get_window().get_position()
         self.pos_x = wpos[0]
         self.pos_y = wpos[1]
 
@@ -86,67 +85,59 @@ class ChartBrowserWindow(gtk.Window):
         self.destroy() 
 
     def on_state(self,e,event):
-        if self.child.get_nth_page(1).changes:
+        if self.get_child().get_nth_page(1).changes:
             boss.mpanel.browser.tables.emit('changed')
             boss.mpanel.browser.relist('')
 
     def cb_exit(self,e,parent):
         parent.browser = None
-        if self.child.get_nth_page(1).changes:
+        if self.get_child().get_nth_page(1).changes:
             boss.mpanel.browser.tables.emit('changed')
             boss.mpanel.browser.relist('')
-        self.child.get_nth_page(3).save_couples()
+        self.get_child().get_nth_page(3).save_couples()
         return False
 
 
-class  BrowserPanel(gtk.HBox): 
+class  BrowserPanel(Gtk.HBox): 
     def __init__(self,parent):
-        gtk.HBox.__init__(self)
+        Gtk.HBox.__init__(self)
 
         self.chartview = None
-        hbox = gtk.HBox()
+        hbox = Gtk.HBox()
 
-        vbox = gtk.VBox()        
+        vbox = Gtk.VBox()        
         # tables
-        liststore = gtk.ListStore(str)
-        self.tables = gtk.ComboBoxEntry(liststore)
+        self.tables = Gtk.ComboBoxText()
         self.tables.set_size_request(228,-1)
-        self.tables.get_children()[0].set_editable(False)
-        cell = gtk.CellRendererText()
-
-        self.tables.pack_start(cell)
         self.tables.connect('changed',self.on_tables_changed)
         tablelist = curr.datab.get_databases()
         
-        for c in tablelist:
-            liststore.append([c])
         index = 0
-        for i,r in enumerate(liststore):
-            if r[0] == curr.database:
+        for i,c in enumerate(tablelist):
+            self.tables.append_text(c)
+            if c == curr.database:
                 index = i
-                break 
         self.tables.set_active(index) 
 
-        but = gtk.Button()
-        img = gtk.Image()
+        but = Gtk.Button()
+        img = Gtk.Image()
         appath = boss.app.appath
         imgfile = Path.joinpath(appath,"astronex/resources/refresh-18.png")
         img.set_from_file(str(imgfile))
         but.set_image(img)
         but.connect('clicked',self.on_refresh_clicked,self.tables)
-        hhbox = gtk.HBox()
-        hhbox.pack_start(self.tables,False,False)
-        hhbox.pack_start(but,False,False) 
-        vbox.pack_start(hhbox,False,False)
-        
-        #vbox.pack_start(self.tables,False,False)
-        
+        hhbox = Gtk.HBox()
+        hhbox.pack_start(self.tables,False,False,0)
+        hhbox.pack_start(but,False,False,0)
+        vbox.pack_start(hhbox,False,False,0)
+
+        #vbox.pack_start(self.tables,False,False,0)        
         # chart list
-        self.chartmodel = gtk.ListStore(str,int)
-        #self.chartview = gtk.TreeView(self.chartmodel)
+        self.chartmodel = Gtk.ListStore(str,int)
+        #self.chartview = Gtk.TreeView(self.chartmodel)
         self.chartview = SearchView(self.chartmodel)
         selection = self.chartview.get_selection()
-        selection.set_mode(gtk.SELECTION_SINGLE)
+        selection.set_mode(Gtk.SelectionMode.SINGLE)
         chartlist = curr.datab.get_chartlist(self.tables.get_active_text())
 
         for c in chartlist:
@@ -154,29 +145,29 @@ class  BrowserPanel(gtk.HBox):
             if c[2] == '':  glue = ''
             self.chartmodel.append([c[2]+glue+c[1] , int(c[0]) ])
         
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn(None,cell,text=0)
+        cell = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn(None,cell,text=0)
         self.chartview.append_column(column) 
         self.chartview.set_headers_visible(False)
         self.chartview.connect('row_activated',self.on_chart_activated)
         sel = self.chartview.get_selection()
-        sel.set_mode(gtk.SELECTION_SINGLE)
+        sel.set_mode(Gtk.SelectionMode.SINGLE)
         sel.connect('changed',self.on_sel_changed)
         sel.select_path(0,)
         self.chartview.grab_focus()
         
-        sw = gtk.ScrolledWindow()
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        sw = Gtk.ScrolledWindow()
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         sw.add(self.chartview) 
-        vbox.pack_start(sw,True,True)
+        vbox.pack_start(sw,True,True,0)
         
         # drawer
-        hbox.pack_start(vbox,False,False)
-        hbox.pack_start(gtk.VSeparator(),False,False)
+        hbox.pack_start(vbox,False,False,0)
+        hbox.pack_start(Gtk.VSeparator(),False,False,0)
         self.chsnap = ChartSnapshot(parent.boss)
         self.chsnap.set_size_request(400,400) 
-        hbox.pack_start(self.chsnap)
-        frame = gtk.Frame()
+        hbox.pack_start(self.chsnap, True, True, 0)
+        frame = Gtk.Frame()
         frame.set_border_width(6)
         frame.add(hbox)
         self.add(frame)
@@ -197,7 +188,7 @@ class  BrowserPanel(gtk.HBox):
     def on_tables_changed(self,combo): 
         if combo.get_active() == -1: return
         if not self.chartview is None:
-            chartmodel = gtk.ListStore(str,int)
+            chartmodel = Gtk.ListStore(str,int)
             chartlist = curr.datab.get_chartlist(self.tables.get_active_text()) 
             for c in chartlist:
                 glue = ", "
@@ -229,31 +220,29 @@ class  BrowserPanel(gtk.HBox):
         MainPanel.actualize_pool(Slot.storage,chart) 
 
     def relist(self):
-        liststore = gtk.ListStore(str)
+        self.tables.remove_all()
         tablelist = curr.datab.get_databases() 
         for c in tablelist:
-            liststore.append([c])
-        self.tables.set_model(liststore)
+            self.tables.append_text(c)
 
 
-class ChartSnapshot(gtk.DrawingArea):
+class ChartSnapshot(Gtk.DrawingArea):
     def __init__(self,boss):
         self.boss = boss
         self.opts = boss.opts
-        gtk.DrawingArea.__init__(self)
-        self.connect("expose_event",self.dispatch)
+        Gtk.DrawingArea.__init__(self)
+        self.connect("draw",self.dispatch)
         self.drawer = SnapMixin(boss.opts,self) 
 
-    def dispatch(self,da,event):
-        cr = self.window.cairo_create()
-        w = self.allocation.width
-        h = self.allocation.height
+    def dispatch(self,da,cr):
+        w = self.get_allocated_width()
+        h = self.get_allocated_height()
         cr.rectangle(0,0,w,h)
         cr.clip()
         cr.set_source_rgb(1.0,1.0,0.95)
         cr.rectangle(0,0,w,h)
         cr.fill()
-        cr.set_line_join(cairo.LINE_JOIN_ROUND) 
+        cr.set_line_join(cairo.LineJoin.ROUND) 
         cr.set_line_width(float(self.opts.base))
         
         chartobject = RadixChart(chart, None)
@@ -262,22 +251,20 @@ class ChartSnapshot(gtk.DrawingArea):
         return True
 
     def redraw(self): 
-        w = self.allocation.width
-        h = self.allocation.height
-        self.window.invalidate_rect(gtk.gdk.Rectangle(0,0,w,h),False)
+        self.queue_draw()
 
     def d_label(self,cr,w,h,chart):
         cr.identity_matrix()
         font = pango.FontDescription(self.opts.font)
         font.set_size(7*pango.SCALE)
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         layout.set_font_description(font)
         date,time = parsestrtime(chart.date)
         date = date + " - " + time.split(" ")[0]
         name = chart.first + " " + chart.last
         layout.set_text('%s  (%s)' % (name,date))
         ink,logical = layout.get_extents()
-        xpos = logical[2]/pango.SCALE
+        xpos = logical.width/pango.SCALE
         cr.set_source_rgb(0.0,0,0.5)
         cr.move_to(w-xpos-5,h-12)
         cr.show_layout(layout)

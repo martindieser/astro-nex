@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pango
+from astronex.compat import pango, pangocairo
 from datetime import datetime
 from .. utils import format_latitud, format_longitud
 from .. drawing.roundedcharts import RadixChart,HouseChart,NodalChart
@@ -115,7 +115,7 @@ class SheetMixin(object):
         cr.restore()
     
     def data_rays(self,cr):
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)
@@ -141,7 +141,7 @@ class SheetMixin(object):
     
     
     def data_dyncalc(self,cr):
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)
@@ -212,7 +212,7 @@ class SheetMixin(object):
         hm = 50; vm = 325
         ho = 44; vo = 20
 
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)
@@ -258,7 +258,7 @@ class SheetMixin(object):
 
         asp_count = [0]*12
         conj_count = [0]*3
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         for i in range(len(aspects)):
             asp = aspects[i]
             if not self.goodwill and asp['gw']:
@@ -492,7 +492,7 @@ class SheetMixin(object):
         cusp = plan[10]
         plan[10] = curr.curr_chart.houses[0]
         cr.set_source_rgb(0,0,0.4)
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)
@@ -540,7 +540,7 @@ class SheetMixin(object):
         hh = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"]
         pl = curr.curr_chart.housepos_and_sector()
         cr.set_source_rgb(0,0,0.4)
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)
@@ -587,7 +587,7 @@ class SheetMixin(object):
 
     def data_planh(self,cr,font):
         cr.set_source_rgb(0,0,0.4)
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         taba = pango.TabArray(4,True)
         taba.set_tab(0,pango.TAB_LEFT,50)
         taba.set_tab(1,pango.TAB_LEFT,200)
@@ -674,7 +674,7 @@ class SheetMixin(object):
                 cr.new_path()
 
     def main_labels(self,cr,font,kind='radix'):
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         label = labels[curr.curr_op]
         layout.set_text("%s\n%s\n%s %s" % get_personal_info())
         layout.set_font_description(font)

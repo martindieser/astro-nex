@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from path import Path
-import gtk
+from astronex.compat import Gdk
 from configobj import ConfigObj
 
 MAGICK_COL = 65535.0
@@ -44,7 +44,7 @@ class NexConf(object):
     def __init__(self):
         for sec  in list(self.sections.values()):
             self.__dict__.update(sec)
-        from . import locale
+        import locale
         lang = locale.getdefaultlocale()[0]
         if lang:
             lang = lang.split('_')[0]
@@ -64,7 +64,7 @@ cfgcols = {}
 
 def read_config(homedir):
     global cfgcols
-    cfgfile = Path(home_dir).joinpath('cfg.ini')
+    cfgfile = Path(homedir).joinpath('cfg.ini')
     conf = ConfigObj(cfgfile)
     popts = {}
     for k in list(conf.keys()):
@@ -128,28 +128,28 @@ def reload_config(conf,boss):
 def parse_aux_colors():
     auxcol = {}
     for cl in 'click1','click2','clicksoul','inv','low','transcol':
-        col = gtk.gdk.color_parse(cfgcols[cl]) 
+        col = Gdk.color_parse(cfgcols[cl]) 
         auxcol[cl] =(col.red/MAGICK_COL,col.green/MAGICK_COL,col.blue/MAGICK_COL)
     return auxcol
     
 def parse_zod_colors():
     zodcol = [] 
     for cl in 'fire','earth','air','water':
-        col = gtk.gdk.color_parse(cfgcols[cl]) 
+        col = Gdk.color_parse(cfgcols[cl]) 
         zodcol.append((col.red/MAGICK_COL,col.green/MAGICK_COL,col.blue/MAGICK_COL)) 
     return zodcol
 
 def parse_plan_colors():
     plancol = {}
     for cl in 'pers','tool','trans','node':
-        col = gtk.gdk.color_parse(cfgcols[cl]) 
+        col = Gdk.color_parse(cfgcols[cl]) 
         plancol[cl] = (col.red/MAGICK_COL,col.green/MAGICK_COL,col.blue/MAGICK_COL)
     return plancol
 
 def parse_asp_colors():
     aspcol = {}
     for cl in 'orange','green','blue','red':
-        col = gtk.gdk.color_parse(cfgcols[cl]) 
+        col = Gdk.color_parse(cfgcols[cl]) 
         aspcol[cl] = (col.red/MAGICK_COL,col.green/MAGICK_COL,col.blue/MAGICK_COL)
     return aspcol
 

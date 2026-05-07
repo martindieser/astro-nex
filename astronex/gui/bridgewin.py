@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import gtk
-import cairo, pango
+from astronex.compat import Gtk, Gdk, GObject, pango, cairo, pangocairo
 from copy import copy
 from math import pi as PI
 from .. drawing.coredraw import CoreMixin
@@ -14,36 +13,37 @@ boss = None
 chart =  None
 get_AP_DEG = None
 
-class BridgePEWindow(gtk.Window):
+class BridgePEWindow(Gtk.Window):
     def __init__(self,parent):
         global boss, curr, chart, get_AP_DEG
         curr = parent.boss.get_state()
         boss = parent.boss
         self.parnt = parent
         get_AP_DEG = parent.boss.da.drawer.get_AP_DEG
-        gtk.Window.__init__(self)
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
+        Gtk.Window.__init__(self)
+        self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
         self.set_title(_("PE Puente"))
-        self.set_events(gtk.gdk.BUTTON_PRESS_MASK) 
+        self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK) 
         self.connect('destroy', self.cb_exit,parent) 
         self.connect('button-press-event', self.clicked)
 
-        accel_group = gtk.AccelGroup()
-        accel_group.connect_group(gtk.keysyms.Escape,0,gtk.ACCEL_LOCKED,self.escape)
+        accel_group = Gtk.AccelGroup()
+        # >> CAMBIAR, GTK4 elimino los AccelGroup
+        # accel_group.connect(Gdk.KEY_Escape,0,Gtk.AccelFlags.LOCKED,self.escape)
         self.add_accel_group(accel_group) 
         
         # drawer
         bridge = BridgeArea(parent.boss)
         bridge.set_size_request(450,450) 
-        frame = gtk.Frame()
+        frame = Gtk.Frame()
         frame.add(bridge)
         self.add(frame)
         self.sda = bridge
         self.set_decorated(False) 
-        width = gtk.gdk.screen_width()
-        height = gtk.gdk.screen_height()
+        width = Gdk.Screen.width()
+        height = Gdk.Screen.height()
         self.move(width-450,height-450)
         self.show_all()
     
@@ -62,17 +62,17 @@ class BridgePEWindow(gtk.Window):
 
 alts = ['nat','nod']
 
-class BridgeArea(gtk.DrawingArea):
+class BridgeArea(Gtk.DrawingArea):
     pepending = [False,None,None]
 
     def __init__(self,boss):
         self.boss = boss
         self.opts = boss.opts
-        gtk.DrawingArea.__init__(self)
-        self.set_events(gtk.gdk.BUTTON_PRESS_MASK | 
-                gtk.gdk.BUTTON_RELEASE_MASK | 
-                gtk.gdk.POINTER_MOTION_MASK | 
-                gtk.gdk.POINTER_MOTION_HINT_MASK)
+        Gtk.DrawingArea.__init__(self)
+        self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK | 
+                Gdk.EventMask.BUTTON_RELEASE_MASK | 
+                Gdk.EventMask.POINTER_MOTION_MASK | 
+                Gdk.EventMask.POINTER_MOTION_HINT_MASK)
         self.connect("expose_event",self.dispatch)
         self.connect("scroll-event", self.on_scroll)        
         self.drawer = Drawer(boss.opts,self) 
@@ -80,9 +80,9 @@ class BridgeArea(gtk.DrawingArea):
 
     def dispatch(self,da,event):
         self.drawer.pe_zones = self.boss.da.drawer.pe_zones
-        cr = self.window.cairo_create()
-        w = self.allocation.width
-        h = self.allocation.height
+        cr = self.get_window().cairo_create()
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         cr.rectangle(0,0,w,h)
         cr.clip()
         cr.set_source_rgb(0.98,1.0,0.98)
@@ -111,37 +111,37 @@ class BridgeArea(gtk.DrawingArea):
         return True 
 
     def redraw(self): 
-        w = self.allocation.width
-        h = self.allocation.height
-        self.window.invalidate_rect(gtk.gdk.Rectangle(0,0,w,h),False)
+        w = self.get_allocation().width
+        h = self.get_allocation().height
+        self.get_window().invalidate_rect(Gdk.Rectangle(x=0,y=0,width=w,height=h),False)
 
     def draw_pelabel(self,cr,w,h):
         date = self.dt
         date = date.__str__().split(' ')[0].split('-')
         date.reverse()
         date = "/".join(date) 
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         cr.set_source_rgb(0,0,0.6) 
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)
         layout.set_text(date)
         ink,logical = layout.get_extents()
-        xpos = logical[2]/pango.SCALE
+        xpos = logical.width/pango.SCALE
         cr.move_to(w-xpos-5,5)
         cr.show_layout(layout)
 
     def draw_label(self,cr,w,h): 
         chart = curr.curr_chart
         name = "%s %s" % (chart.first,chart.last) 
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)
         col = (0,0,0.4) 
         layout.set_text(name)
         ink,logical = layout.get_extents()
-        xpos = logical[2]/pango.SCALE
+        xpos = logical.width/pango.SCALE
         cr.set_source_rgb(*col) 
         cr.move_to(w-xpos-5,h-15)
         cr.show_layout(layout)
@@ -255,7 +255,7 @@ class Drawer(CoreMixin,BioMixin):
         cycles =  chart.get_cycles(curr.date.dt)
         self.house_t = chart.house_time_lapsus(bh,cycles)
         font = pango.FontDescription(self.opts.font)
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font.set_size(int(14*pango.SCALE*self.minim*MAGICK_FONTSCALE))
         layout.set_font_description(font)
 

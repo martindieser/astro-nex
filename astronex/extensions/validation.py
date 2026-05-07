@@ -1,8 +1,4 @@
-''' Shamelessly stolen and adapted from Kiwi framework '''
-import gobject
-import pango
-import gtk
-from gtk import gdk,keysyms
+from astronex.compat import Gtk, Gdk, GObject, pango
 import datetime
 from pytz import timezone
 import time
@@ -15,8 +11,8 @@ class ValidationError(Exception):
     def __init__(self, msg):
         self.msg = msg
 
-def set_background(widget, color, state=gtk.STATE_NORMAL): 
-    widget.modify_base(state, gdk.color_parse(color))
+def set_background(widget, color, state=Gtk.StateFlags.NORMAL): 
+    widget.modify_base(state, Gdk.color_parse(color))
 
 (INPUT_ASCII_LETTER,
  INPUT_ALPHA,
@@ -39,12 +35,12 @@ INPUT_CHAR_MAP = {
     }
 
 
-class MaskEntry(gtk.Entry):
-    __gproperties__ = { 'mask': (gobject.TYPE_STRING, '','', '' , gobject.PARAM_READWRITE) }
+class MaskEntry(Gtk.Entry):
+    __gproperties__ = { 'mask': (GObject.TYPE_STRING, '','', '' , GObject.PARAM_READWRITE) }
 
     def __init__(self):
 
-        gtk.Entry.__init__(self)
+        Gtk.Entry.__init__(self)
 
         self.connect('insert-text', self._on_insert_text)
         self.connect('delete-text', self._on_delete_text)
@@ -191,7 +187,7 @@ class MaskEntry(gtk.Entry):
         if len(validators) > next + 1:
             if (isinstance(validators[next], str) and
                 isinstance(validators[next+1], int)):
-                gobject.idle_add(self.set_position, next+1)
+                GObject.idle_add(self.set_position, next+1)
 
     def _on_delete_text(self, editable, start, end):
         if not self._mask or self._block_delete:

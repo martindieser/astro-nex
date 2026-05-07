@@ -4,7 +4,7 @@ import sqlite3
 from copy import copy
 from path import Path
 from .utils import dectodeg,degtodec
-from . import locale
+import locale
 locale.setlocale(locale.LC_ALL,'')
 local_conn = None
 chart_conn = None
@@ -153,42 +153,43 @@ def get_name_from_code(code):
     cursor = local_conn.cursor()
     sql = "select name from worldnames where code='%s'" % code.upper()
     cursor.execute(sql)
-    return cursor.next()[0]
+    return cursor.fetchone()[0]
+    # return cursor.fetchone()[0]
 
 def get_regionname_from_code(alfa, code):
     '''Gets region name from countryycode and code.'''
     cursor = local_conn.cursor()
     sql = "select name from worldadmin where alfa='%s' and code='%s'" % (alfa, code)
     cursor.execute(sql)
-    return cursor.next()[0]
+    return cursor.fetchone()[0]
 
 def get_usadistrict_from_code(alfa, code):
     '''Gets region name from countryycode and code.'''
     cursor = local_conn.cursor()
     sql = "select name from usaadmin where alfa='%s' and code='%s'" % (alfa, code)
     cursor.execute(sql)
-    return cursor.next()[0]
+    return cursor.fetchone()[0]
 
 def get_name_from_usacode(code):
     '''Gets state name from its  code.'''
     cursor = local_conn.cursor()
     sql = "select name from usastates where alfa='%s'" % code.upper()
     cursor.execute(sql)
-    return cursor.next()[0]
+    return cursor.fetchone()[0]
 
 def get_code_from_name(name):
     '''Gets country code from its name.'''
     cursor = local_conn.cursor()
     sql = "select code from worldnames where name='%s'" % name
     cursor.execute(sql)
-    return cursor.next()[0]
+    return cursor.fetchone()[0]
 
 def get_usacode_from_name(name):
     '''Gets state alfa code from its name.'''
     cursor = local_conn.cursor()
     sql = "select alfa from usastates where name='%s'" % name
     cursor.execute(sql)
-    return cursor.next()[0]
+    return cursor.fetchone()[0]
 
 def fetch_all_from_country(country, usa=False):
     '''get cities from country'''
@@ -291,7 +292,7 @@ def fetch_blindly_usacity(country, city, loc):
 
     sql = "select name from usastates where alfa == '%s'" % loc.country
     cursor.execute(sql)
-    loc.country = cursor.next()[0]
+    loc.country = cursor.fetchone()[0]
     loc.region += " (" + loc.country + ")"
     loc.country = "USA"
 
@@ -327,7 +328,7 @@ def fetch_blindly_zone_usa(state, cc, loc):
         break
     sql = "select name from usastates where alfa == '%s'" %  state
     cursor.execute(sql)
-    loc.country = cursor.next()[0]
+    loc.country = cursor.fetchone()[0]
     loc.region += " (" + loc.country + ")"
     loc.country = "USA"
     loc.country_code = cc
@@ -394,12 +395,12 @@ def fetch_region(cursor, loc):
     sql = """select name from worldadmin where alfa == '%s' and code == '%s'
     """ % (loc.country_code, loc.region_code)
     cursor.execute(sql)
-    loc.region = cursor.next()[0]
+    loc.region = cursor.fetchone()[0]
 
 def fetch_country(cursor, loc):
     sql = "select name from worldnames where code == '%s'" % loc.country_code
     cursor.execute(sql)
-    loc.country = cursor.next()[0]
+    loc.country = cursor.fetchone()[0]
 
 def fetch_zone(cursor, loc):
     sql = "select zones, name from zonetab where alfa == '%s'" % loc.country_code
@@ -457,7 +458,7 @@ def fetch_usacity(country, city, code, loc):
 
     sql = "select name from usastates where alfa == '%s'" % loc.country
     cursor.execute(sql)
-    loc.country = cursor.next()[0]
+    loc.country = cursor.fetchone()[0]
     loc.region += " (" + loc.country + ")"
     loc.country = "USA"
 

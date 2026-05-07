@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import gtk
+from astronex.compat import Gtk
 from path import Path
 curr = None
 boss = None
 
-class OpPanel(gtk.VBox):
+class OpPanel(Gtk.VBox):
     images = {
             'charts': "chart.png",
             'data': "data.png",
@@ -103,23 +103,23 @@ class OpPanel(gtk.VBox):
 
     def __init__(self,manager):
         global boss, curr
-        gtk.VBox.__init__(self)
+        Gtk.VBox.__init__(self)
         boss = manager
         curr = boss.get_state()
 
-        self.groups_table = gtk.Table(2,5,True)
-        self.pack_start(self.groups_table, False,False)
+        self.groups_table = Gtk.Table(2,5,True)
+        self.pack_start(self.groups_table, False,False,0)
         self.current_button = None
         self.init_button = None
 
-        self.notebook = gtk.Notebook()
+        self.notebook = Gtk.Notebook()
         self.notebook.set_show_tabs(False)
         self.notebook.set_show_border(False)
 
-        sw = gtk.ScrolledWindow()
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        sw = Gtk.ScrolledWindow()
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         sw.add_with_viewport(self.notebook) 
-        self.pack_start(sw,True,True)
+        self.pack_start(sw,True,True,0)
 
         self.nb_sections = 0
         self.sections_button_group = None
@@ -131,89 +131,91 @@ class OpPanel(gtk.VBox):
         page = self.nb_sections
         for i,group in enumerate(['double1','double2']):
             self.append_mult_group(group,i,page)
-        hbox = gtk.HBox()
+        hbox = Gtk.HBox()
         self.make_lists(hbox,2,self.on_seldouble_changed)
-        self.notebook.append_page(hbox)
+        self.notebook.append_page(hbox,None)
         self.nb_sections += 1 
         page = self.nb_sections
         for i,group in enumerate(['triple1','triple2'] ):
             self.append_mult_group(group,i,page,offset=4)
-        hbox = gtk.HBox()
+        hbox = Gtk.HBox()
         self.make_lists(hbox,3,self.on_seltriple_changed)
-        self.notebook.append_page(hbox)
+        self.notebook.append_page(hbox,None)
 
     def append_mult_group(self,name,pos,page,offset=3):
         appath = boss.app.appath
-        button = gtk.RadioButton(self.sections_button_group)
-        img = gtk.Image()
+        button = Gtk.RadioButton(group=self.sections_button_group)
+        img = Gtk.Image()
         imgfile = Path.joinpath(appath,"astronex/resources/"+self.images[name]) 
         img.set_from_file(str(imgfile))
         button.set_image(img)
         button.set_mode(False)
-        button.set_data('page', page)
-        button.set_data('name', name)
+        button.page = page
+        button.name = name
+        # .set_data('name', name)
         button.connect('toggled', self.on_catalog_button_toggled) 
-        r = pos % 2 ; c = (pos / 2) + offset 
+        r = pos % 2 ; c = int(pos / 2) + offset 
         self.groups_table.attach(button,c,c+1,r,r+1)
 
     def make_lists(self,hbox,n,callback):
         for i in range(n):
-            model = gtk.ListStore(str,str)
-            view = gtk.TreeView(model)
+            model = Gtk.ListStore(str,str)
+            view = Gtk.TreeView(model)
             for o in self.opdoubles:
                 model.append(o)
-            cell = gtk.CellRendererText()
-            cell.weight = 600
-            column = gtk.TreeViewColumn(None,cell,text=0)
+            cell = Gtk.CellRendererText()
+            cell.set_property('weight', 600)
+            column = Gtk.TreeViewColumn(None,cell,text=0)
             view.append_column(column)
             view.set_headers_visible(False) 
             view.set_enable_search(False)
             sel = view.get_selection()
-            sel.set_mode(gtk.SELECTION_SINGLE)
+            sel.set_mode(Gtk.SelectionMode.SINGLE)
             sel.connect('changed',callback,i)
-            hbox.pack_start(view,True,True)
+            hbox.pack_start(view,True,True,0)
             if i < n-1:
-                hbox.pack_start(gtk.HSeparator(),False,False) 
+                hbox.pack_start(Gtk.HSeparator(),False,False,0) 
 
     def append_single_group(self, name, group):
         page = self.nb_sections
         self.nb_sections += 1 
         appath = boss.app.appath
-        
-        if not self.sections_button_group:
-            button = gtk.RadioButton(None)
+    
+        if not self.init_button:
+            button = Gtk.RadioButton(group=None)
             self.current_button = button
             self.init_button = button
         else:
-            button = gtk.RadioButton(self.sections_button_group)
-        img = gtk.Image()
+            button = Gtk.RadioButton(group=self.init_button)
+
+        img = Gtk.Image()
         imgfile = Path.joinpath(appath,"astronex/resources/"+self.images[name]) 
         img.set_from_file(str(imgfile))
         button.set_image(img)
-        self.sections_button_group = button.get_group()[0]
+        # self.sections_button_group = button.get_group()
         button.set_mode(False)
-        button.set_data('page', page)
-        button.set_data('name', name)
+        button.page = page
+        button.name = name
         button.connect('toggled', self.on_catalog_button_toggled)
 
         pos = self.namebuttons.index(name) 
-        r = pos % 2 ; c = (pos / 2) 
+        r = pos % 2 ; c = int(pos / 2) 
         self.groups_table.attach(button,c,c+1,r,r+1)
-        self.notebook.append_page(self.widget_table_create(group))
+        self.notebook.append_page(self.widget_table_create(group),None)
 
     def widget_table_create(self, ops):
-        model = gtk.ListStore(str,str)
-        view = gtk.TreeView(model)
+        model = Gtk.ListStore(str,str)
+        view = Gtk.TreeView(model)
         for o in ops:
             model.append(o)
-        cell = gtk.CellRendererText()
-        cell.weight = 600
-        column = gtk.TreeViewColumn(None,cell,text=0)
+        cell = Gtk.CellRendererText()
+        cell.set_property('weight', 600)
+        column = Gtk.TreeViewColumn(None,cell,text=0)
         view.append_column(column)
         view.set_headers_visible(False) 
         view.set_enable_search(False)
         sel = view.get_selection()
-        sel.set_mode(gtk.SELECTION_SINGLE)
+        sel.set_mode(Gtk.SelectionMode.SINGLE)
         sel.connect('changed',self.on_sel_changed)
         return view
 
@@ -286,8 +288,8 @@ class OpPanel(gtk.VBox):
     
     def on_catalog_button_toggled(self, button):
         pmode = ['','master','click']
-        page = button.get_data('page')
-        name = button.get_data('name')
+        page = button.page
+        name = button.name
         self.current_button = button
         if name in self.singles:
             curr.opmode = 'simple'
@@ -305,7 +307,7 @@ class OpPanel(gtk.VBox):
             if i is None:
                 sel.select_path(0)
             sel.emit('changed')
-            curr.set_list(button.get_data('name'))
+            curr.set_list(button.name)
         except AttributeError:
            if curr.opmode == 'double':
                 left,_,right = self.notebook.get_nth_page(page).get_children()
@@ -318,7 +320,7 @@ class OpPanel(gtk.VBox):
                     if i is None or m.get_path(i) != (2,): #nodal
                         right.get_selection().select_path((1,))
                 right.get_selection().emit('changed')
-                curr.set_list(button.get_data('name'))
+                curr.set_list(button.name)
            elif curr.opmode == 'triple':
                 left,_,up,_,right = self.notebook.get_nth_page(page).get_children()
                 if curr.clickmode == 'click':
@@ -368,7 +370,7 @@ class OpPanel(gtk.VBox):
 
     def subst_tripleup(self,up):
         lists = { 'master': self.opdoubles, 'click':self.optriples }
-        model = gtk.ListStore(str,str)
+        model = Gtk.ListStore(str,str)
         for o in lists[curr.clickmode]:
             model.append(o)
         up.set_model(model)

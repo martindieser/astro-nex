@@ -13,11 +13,10 @@ is available at U{http://www.opensource.org/licenses/bsd-license.php}
 # this file is a modified version of source code from the Accerciser project
 # http://live.gnome.org/accerciser
 
-import gtk
+from astronex.compat import Gtk, Gdk, pango
 import re
 import sys
 import os
-import pango
 from io import StringIO
 from functools import reduce
 
@@ -154,11 +153,11 @@ class IterableIPShell:
       output.close()
       input.close()
 
-class ConsoleView(gtk.TextView):
+class ConsoleView(Gtk.TextView):
   def __init__(self):
-    gtk.TextView.__init__(self)
+    Gtk.TextView.__init__(self)
     self.modify_font(pango.FontDescription('Mono'))
-    self.modify_bg(gtk.STATE_NORMAL,gtk.gdk.color_parse("#000"))
+    self.modify_bg(Gtk.StateFlags.NORMAL,Gdk.color_parse("#000"))
     self.set_cursor_visible(True)
     self.text_buffer = self.get_buffer()
     self.mark = self.text_buffer.create_mark('scroll_mark',
@@ -268,20 +267,20 @@ class IPythonView(ConsoleView, IterableIPShell):
     return self.getCurrentLine()
 
   def keyPress(self, widget, event):
-    if event.state & gtk.gdk.CONTROL_MASK and event.keyval == 99:
+    if event.state & Gdk.ModifierType.CONTROL_MASK and event.keyval == 99:
       self.interrupt = True
       self._processLine()
       return True
-    elif event.keyval == gtk.keysyms.Return:
+    elif event.keyval == Gdk.KEY_Return:
       self._processLine()
       return True
-    elif event.keyval == gtk.keysyms.Up:
+    elif event.keyval == Gdk.KEY_Up:
       self.changeLine(self.historyBack())
       return True
-    elif event.keyval == gtk.keysyms.Down:
+    elif event.keyval == Gdk.KEY_Down:
       self.changeLine(self.historyForward())
       return True
-    elif event.keyval == gtk.keysyms.Tab:
+    elif event.keyval == Gdk.KEY_Tab:
       if not self.getCurrentLine().strip():
         return False
       completed, possibilities = self.complete(self.getCurrentLine())

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import cairo, pango
+from astronex.compat import cairo, pango, pangocairo
 import math
 from math import pi as PI
 from .. boss import boss
@@ -358,7 +358,7 @@ class ProfileMixin(object):
             cr.stroke() 
         
         #### minor axes
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(12*pango.SCALE*radius*MAGICK_FONTSCALE))
         layout.set_font_description(font)

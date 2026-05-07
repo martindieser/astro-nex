@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
+from astronex.compat import Gtk, Gdk, GObject, pango, cairo, pangocairo
 import os
 import sys
-import gtk
-import cairo
-import pangocairo
-import pango
 import PIL.Image
 import PIL.ImageOps
 from .. drawing.dispatcher import DrawMixin
@@ -17,29 +13,29 @@ MAGICK_SCALE = 0.002
 
 suffixes = boss.suffixes
 
-class ImageExportDialog(gtk.Dialog):
+class ImageExportDialog(Gtk.Dialog):
     '''Save image config dialog'''
 
     def __init__(self,pg=False):
-        gtk.Dialog.__init__(self,
+        Gtk.Dialog.__init__(self,
                 _("Exportar como imagen"), None,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                    gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+                Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                    Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
 
-        self.vbox.set_border_width(3)
-        self.vbox.set_spacing(6)
+        self.get_content_area().set_border_width(3)
+        self.get_content_area().set_spacing(6)
         
-        self.vbox.pack_start(self.make_control(),False,False)
-        self.vbox.pack_start(gtk.HSeparator(),True,True)
-        chooser = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
-        self.vbox.pack_start(chooser,False,False)
+        self.get_content_area().pack_start(self.make_control(),False,False, 0)
+        self.get_content_area().pack_start(Gtk.HSeparator(),True,True, 0)
+        chooser = Gtk.FileChooserWidget(action=Gtk.FileChooserAction.SAVE)
+        self.get_content_area().pack_start(chooser,False,False, 0)
         self.chooser = chooser
         self.chooser.set_size_request(600,400)
         
         
-        self.set_default_response(gtk.RESPONSE_OK)
-        filter = gtk.FileFilter()
+        self.set_default_response(Gtk.ResponseType.OK)
+        filter = Gtk.FileFilter()
         filter.add_mime_type("image/png")
         filter.add_mime_type("image/jpeg")
         #filter.add_mime_type("image/tiff")
@@ -62,71 +58,74 @@ class ImageExportDialog(gtk.Dialog):
         self.show_all()
 
     def make_control(self):
-        tab = gtk.Table(2,3)
+        tab = Gtk.Table(2,3)
         tab.set_row_spacings(6)
         tab.set_col_spacings(12)
         tab.set_homogeneous(False)
         tab.set_border_width(6)
         
         #left
-        buttbox = gtk.HButtonBox()
-        buttbox.set_layout(gtk.BUTTONBOX_EDGE) 
-        label = gtk.Label(_("Anchura"))
-        buttbox.pack_start(label)
-        adj = gtk.Adjustment(int(boss.opts.hsize), 1, 10000, 1, 1, 1)
-        hdim  = gtk.SpinButton(adj)
+        buttbox = Gtk.HButtonBox()
+        buttbox.set_layout(Gtk.ButtonBoxStyle.EDGE) 
+        label = Gtk.Label(_("Anchura"))
+        buttbox.pack_start(label, True, True, 0)
+        adj = Gtk.Adjustment(int(boss.opts.hsize), 1, 10000, 1, 1, 1)
+        hdim  = Gtk.SpinButton()
+        hdim.set_adjustment(adj)
         hdim.set_alignment(1.0)
         hdim.set_numeric(True)
         lbl = 'hsize'
         adj.connect('value-changed', self.spin_imgsize,hdim,lbl)
         hdim.connect('changed', self.entry_imgsize,lbl)
-        buttbox.pack_start(hdim)
+        buttbox.pack_start(hdim, True, True, 0)
         tab.attach(buttbox,0,1,0,1)
         
-        buttbox = gtk.HButtonBox()
-        buttbox.set_layout(gtk.BUTTONBOX_EDGE) 
-        label = gtk.Label(_("Altura"))
-        buttbox.pack_start(label)
-        adj = gtk.Adjustment(int(boss.opts.vsize), 1, 10000, 1, 1, 1)
-        vdim  = gtk.SpinButton(adj)
+        buttbox = Gtk.HButtonBox()
+        buttbox.set_layout(Gtk.ButtonBoxStyle.EDGE) 
+        label = Gtk.Label(_("Altura"))
+        buttbox.pack_start(label, True, True, 0)
+        adj = Gtk.Adjustment(int(boss.opts.vsize), 1, 10000, 1, 1, 1)
+        vdim  = Gtk.SpinButton()
+        vdim.set_adjustment(adj)
         vdim.set_alignment(1.0)
         vdim.set_numeric(True)
         lbl = 'vsize'
         adj.connect('value-changed', self.spin_imgsize,vdim,lbl)
         vdim.connect('changed', self.entry_imgsize,lbl)
-        buttbox.pack_start(vdim) 
+        buttbox.pack_start(vdim, True, True, 0) 
         tab.attach(buttbox,0,1,1,2)
         
         #right
-        buttbox = gtk.HButtonBox()
-        buttbox.set_layout(gtk.BUTTONBOX_EDGE) 
-        label = gtk.Label(_("Resolucion"))
-        buttbox.pack_start(label)
-        adj = gtk.Adjustment(int(boss.opts.resolution), 1, 600, 1, 1, 1)
-        res  = gtk.SpinButton(adj)
+        buttbox = Gtk.HButtonBox()
+        buttbox.set_layout(Gtk.ButtonBoxStyle.EDGE) 
+        label = Gtk.Label(_("Resolucion"))
+        buttbox.pack_start(label, True, True, 0)
+        adj = Gtk.Adjustment(int(boss.opts.resolution), 1, 600, 1, 1, 1)
+        res  = Gtk.SpinButton()
+        res.set_adjustment(adj)
         res.set_alignment(1.0)
         res.set_numeric(True)
         adj.connect('value-changed', self.spin_change_res,res)
         res.connect('changed', self.entry_change_res)
-        buttbox.pack_start(res)
+        buttbox.pack_start(res, True, True, 0)
         tab.attach(buttbox,1,2,0,1)
     
-        buttbox = gtk.HButtonBox()
-        buttbox.set_layout(gtk.BUTTONBOX_EDGE) 
-        label = gtk.Label(_("Tipo"))
-        buttbox.pack_start(label)
-        store = gtk.ListStore(str)
+        buttbox = Gtk.HButtonBox()
+        buttbox.set_layout(Gtk.ButtonBoxStyle.EDGE) 
+        label = Gtk.Label(_("Tipo"))
+        buttbox.pack_start(label, True, True, 0)
+        store = Gtk.ListStore(str)
         store.append([_('png')])
         store.append([_('jpg')])
         #store.append([_('tiff')])
-        combo = gtk.ComboBox(store)
-        cell = gtk.CellRendererText()
+        combo = Gtk.ComboBox.new_with_model_and_entry(store)
+        cell = Gtk.CellRendererText()
         combo.pack_start(cell,True)
         combo.add_attribute(cell,'text',0)
         combo.set_active(0)
         combo.connect("changed",self.typefile_changed)
         self.typefile_chooser = combo
-        buttbox.pack_start(combo)
+        buttbox.pack_start(combo, True, True, 0)
         tab.attach(buttbox,1,2,1,2)
         return tab
     
@@ -168,9 +167,9 @@ class DrawPng(object):
 
         filename = None
         response = dialog.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             filename = dialog.chooser.get_filename()
-        elif response == gtk.RESPONSE_CANCEL:
+        elif response == Gtk.ResponseType.CANCEL:
             pass
         dialog.destroy()
 
@@ -183,7 +182,7 @@ class DrawPng(object):
             h = 1100
         minim = min(w,h)
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,w,h)
-        cr = pangocairo.CairoContext(cairo.Context(surface))
+        cr = cairo.Context(surface)
         cr.set_source_rgba(1.0,1.0,1.0,1.0)
         cr.rectangle(0,0,w,h)
         cr.fill()
@@ -227,7 +226,7 @@ class DrawPng(object):
         
         for id, name,sur in chlist:
             surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,w,h)
-            cr = pangocairo.CairoContext(cairo.Context(surface))
+            cr = cairo.Context(surface)
             cr.set_source_rgb(1.0,1.0,1.0)
             cr.rectangle(0,0,w,h)
             cr.fill()
@@ -263,7 +262,7 @@ def draw_label(cr,w,h):
         d_name(cr,w,h)
 
 def compo_name(cr,w,h):
-    layout = cr.create_layout()
+    layout = pangocairo.create_layout(cr)
     font = pango.FontDescription(opts.font)
     font.set_size(int(7*pango.SCALE*minim*0.9*MAGICK_SCALE))
     layout.set_font_description(font)
@@ -288,7 +287,7 @@ def compo_name(cr,w,h):
     cr.show_layout(layout)
 
 def d_name(cr,w,h,kind='radix'):
-    layout = cr.create_layout()
+    layout = pangocairo.create_layout(cr)
     font = pango.FontDescription(opts.font)
     font.set_size(int(6*pango.SCALE*minim*MAGICK_SCALE))
     layout.set_font_description(font)

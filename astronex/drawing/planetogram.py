@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-import cairo, pango
+from astronex.compat import cairo, pango, pangocairo
 import math
 from math import pi as PI
 from itertools import cycle
@@ -158,7 +158,7 @@ class PlanetogramMixin(object):
             self.draw_pg_ap(cr,radius,chartob,pe)
     
     def plagram_cross_points(self,cr,radius,chartob):
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription("Astro-Nex")
         font.set_size(11*pango.SCALE)
         layout.set_font_description(font)
@@ -826,7 +826,7 @@ class PlanetogramMixin(object):
         ecusp = radius * H_6 * 1.1 
         pre_scl = radius * 0.0022 # chartob.plan_scale
         zplans = chartob.chart.planets[:]
-	rpfacs = [ 0, 0.2, 0.23, 0.26, 0.29, 0.32, 0.34  ] 
+        rpfacs = [ 0, 0.2, 0.23, 0.26, 0.29, 0.32, 0.34  ] 
 
         for plot,hp,glyph,xtra,slw,hlw,zpl in zip(plots,hplan,glyphs,extra,s_lwidths,h_lwidths,zplans):
             pl = plot.degree % 360.0

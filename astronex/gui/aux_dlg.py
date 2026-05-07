@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-import gtk
+from astronex.compat import Gtk, Gdk
 from .. surfaces.sdasurface import  DrawAux
 
-class AuxWindow(gtk.Window):
+class AuxWindow(Gtk.Window):
     def __init__(self,parent,chart=None):
         self.boss = parent.boss
-        gtk.Window.__init__(self)
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
+        Gtk.Window.__init__(self)
+        self.set_type_hint(Gdk.WindowTypeHint.DIALOG)
         #self.set_transient_for(parent)
         self.set_destroy_with_parent(True)
         self.set_title("Astro-Nex")
 
-        accel_group = gtk.AccelGroup()
-        accel_group.connect_group(gtk.keysyms.Escape,0,gtk.ACCEL_LOCKED,self.escape)
-        accel_group.connect_group(gtk.keysyms.plus,0,gtk.ACCEL_LOCKED,self.house_change)
-        accel_group.connect_group(gtk.keysyms.minus,0,gtk.ACCEL_LOCKED,self.house_change)
-        accel_group.connect_group(gtk.keysyms.Menu,0,gtk.ACCEL_LOCKED,self.popup_menu)
-        accel_group.connect_group(gtk.keysyms.Up,gtk.gdk.CONTROL_MASK,gtk.ACCEL_LOCKED,self.fake_scroll_up)
-        accel_group.connect_group(gtk.keysyms.Down,gtk.gdk.CONTROL_MASK,gtk.ACCEL_LOCKED,self.fake_scroll_down)
+        accel_group = Gtk.AccelGroup()
+        accel_group.connect(Gdk.KEY_Escape,0,Gtk.AccelFlags.LOCKED,self.escape)
+        accel_group.connect(Gdk.KEY_plus,0,Gtk.AccelFlags.LOCKED,self.house_change)
+        accel_group.connect(Gdk.KEY_minus,0,Gtk.AccelFlags.LOCKED,self.house_change)
+        accel_group.connect(Gdk.KEY_Menu,0,Gtk.AccelFlags.LOCKED,self.popup_menu)
+        accel_group.connect(Gdk.KEY_Up,Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.LOCKED,self.fake_scroll_up)
+        accel_group.connect(Gdk.KEY_Down,Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.LOCKED,self.fake_scroll_down)
         self.add_accel_group(accel_group) 
 
         self.sda = DrawAux(self.boss,chart)
@@ -38,7 +38,7 @@ class AuxWindow(gtk.Window):
     
     def house_change(self,acgroup,actable,keyval,mod):
         #if self.boss.da.hselvisible:
-        if  keyval == gtk.keysyms.plus:
+        if  keyval == Gdk.KEY_plus:
             self.boss.da.hsel.child.house_updown(1)
         else:
             self.boss.da.hsel.child.house_updown(-1)
@@ -47,12 +47,12 @@ class AuxWindow(gtk.Window):
         self.sda.popup_menu()
 
     def fake_scroll_up(self,acgroup,actable,keyval,mod):
-        event = gtk.gdk.Event(gtk.gdk.SCROLL)
-        event.direction = gtk.gdk.SCROLL_UP
+        event = Gdk.Event.new(Gdk.EventType.SCROLL)
+        event.direction = Gdk.ScrollDirection.UP
         self.sda.on_scroll(self.sda,event)
     
     def fake_scroll_down(self,acgroup,actable,keyval,mod):
-        event = gtk.gdk.Event(gtk.gdk.SCROLL)
-        event.direction = gtk.gdk.SCROLL_DOWN
+        event = Gdk.Event.new(Gdk.EventType.SCROLL)
+        event.direction = Gdk.ScrollDirection.DOWN
         self.sda.on_scroll(self.sda,event)
 

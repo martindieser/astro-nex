@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-import gtk
-import cairo
-import pango
-import pangocairo
+from astronex.compat import pango, cairo, pangocairo
 import math
 from math import pi as PI
 from .roundedcharts import NodalNodalChart
@@ -473,7 +470,7 @@ class PaarWabeMixin(object):
         cr.stroke()
         cr.restore()
 
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(10*pango.SCALE*r*3*MAGICK_FONTSCALE))
         layout.set_font_description(font)
@@ -839,7 +836,7 @@ class PaarWabeMixin(object):
         cr.close_path()
         cr.fill() 
         
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(40*pango.SCALE*r*3*MAGICK_FONTSCALE))
         font.set_style(pango.STYLE_ITALIC)
@@ -954,7 +951,7 @@ class PaarWabeMixin(object):
         self.warpPath(cr,self.plan[pb].paths)
         cr.fill()
         cr.restore()
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription('Astro-Nex')
         font.set_size(int(10*pango.SCALE*r*26*MAGICK_FONTSCALE))
         layout.set_font_description(font)
@@ -990,7 +987,7 @@ class PaarWabeMixin(object):
             cr.stroke()
         else:
             cr.fill()
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(fs*pango.SCALE*r*14*MAGICK_FONTSCALE))
         layout.set_font_description(font)
@@ -1298,7 +1295,7 @@ class PaarWabeMixin(object):
         cr.fill_preserve()
         cr.set_source_rgb(0.4,0.2,0.4)
         cr.stroke()
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(6*pango.SCALE*rr*6*MAGICK_FONTSCALE))
         font.set_weight(pango.WEIGHT_BOLD)
@@ -1340,7 +1337,7 @@ class PaarWabeMixin(object):
         cr.line_to(-cx*0.05,cy*0.88)
         cr.stroke()
         if not fullscreen:
-            layout = cr.create_layout()
+            layout = pangocairo.create_layout(cr)
             font = pango.FontDescription(boss.opts.font)
             font.set_size(int(6*pango.SCALE*width*0.95*MAGICK_FONTSCALE))
             font.set_weight(pango.WEIGHT_BOLD)
@@ -1422,7 +1419,7 @@ class PaarWabeMixin(object):
         v = r*0.022
         w_col = (0.6,0,0.6)
         s_col = (0,0.6,0.2)
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         
         font.set_size(int(8*pango.SCALE*width*0.95*MAGICK_FONTSCALE))
@@ -1507,7 +1504,7 @@ class PaarWabeMixin(object):
         v = r*0.045
         fem_col = (0,0.2,0.6)
         mas_col = (0.7,0,0)
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(7*pango.SCALE*r*1.9*MAGICK_FONTSCALE))
         layout.set_font_description(font)
@@ -1563,7 +1560,7 @@ class PaarWabeMixin(object):
         cr.rectangle(-r*1.05,10.2*v*0.97,2*r*1.05,6*v)
         cr.fill()
         
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(9*pango.SCALE*r*3*MAGICK_FONTSCALE))
         layout.set_font_description(font)
@@ -1906,7 +1903,7 @@ class PaarWabeMixin(object):
         cr.fill_preserve()
         cr.set_source_rgb(0.4,0.3,0.4)
         cr.stroke()
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(28*pango.SCALE*rr*16*MAGICK_FONTSCALE))
         font.set_weight(pango.WEIGHT_BOLD)
@@ -2258,7 +2255,7 @@ class PaarWabeMixin(object):
         cr.fill_preserve()
         cr.set_source_rgb(*wunsen_cols[wscol][0])
         cr.stroke()
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(12*pango.SCALE*rr/0.13*MAGICK_FONTSCALE))
         layout.set_font_description(font)
@@ -2306,7 +2303,7 @@ class PaarWabeMixin(object):
         cr.fill()
         cr.restore()
         cr.set_source_rgb(1,0,0.42) #arsym_col
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(36*pango.SCALE*r*MAGICK_FONTSCALE))
         layout.set_font_description(font)
@@ -2619,7 +2616,7 @@ class PaarWabeMixin(object):
         cr.fill()
 
         ## pentagons
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         
         rrr = rr * 0.95
         redpent = { '2': (0,c2*r*1.05), '1': (0,-c1*r-rr*0.8),
@@ -2889,7 +2886,7 @@ class PaarWabeMixin(object):
                 cr.fill()
                 cr.restore()
             
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(24*pango.SCALE*step*22*MAGICK_FONTSCALE))
         font.set_weight(pango.WEIGHT_BOLD)
@@ -3040,7 +3037,7 @@ class PaarWabeMixin(object):
                     self.warpPath(cr,self.plan[p1[1]].paths)
                     cr.fill()
                     cr.restore()
-                    layout = cr.create_layout()
+                    layout = pangocairo.create_layout(cr)
                     font = pango.FontDescription(boss.opts.font)
                     font.set_size(int(32*pango.SCALE*step*22*MAGICK_FONTSCALE))
                     layout.set_font_description(font)
@@ -3085,7 +3082,7 @@ class PaarWabeMixin(object):
                     self.warpPath(cr,self.plan[p2[1]].paths)
                     cr.fill()
                     cr.restore()
-                    layout = cr.create_layout()
+                    layout = pangocairo.create_layout(cr)
                     font = pango.FontDescription(boss.opts.font)
                     font.set_size(int(32*pango.SCALE*step*22*MAGICK_FONTSCALE))
                     layout.set_font_description(font)
@@ -3107,7 +3104,7 @@ class PaarWabeMixin(object):
                     cr.restore()
 
             cr.set_source_rgb(0.4,0.3,0.4)
-            layout = cr.create_layout()
+            layout = pangocairo.create_layout(cr)
             font = pango.FontDescription(boss.opts.font)
             font.set_size(int(24*pango.SCALE*step*22*MAGICK_FONTSCALE))
             font.set_weight(pango.WEIGHT_BOLD)
@@ -3229,7 +3226,7 @@ class PaarWabeMixin(object):
             cr.line_to(x+si+step*i,(y+h)*up)
             cr.stroke()
         
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(10*pango.SCALE*step*22*MAGICK_FONTSCALE))
         layout.set_font_description(font)

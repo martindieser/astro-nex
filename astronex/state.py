@@ -158,7 +158,7 @@ class Current(object):
         if self.usa:
             fetch = self.datab.fetch_usacity
         try:
-            fetch(self.country, str(city,"utf-8"), code, self.loc)
+            fetch(self.country, str(city), code, self.loc)
             self.date.settz(self.loc.zone)
             self.calcdt.settz(self.loc.zone)
         except StopIteration:

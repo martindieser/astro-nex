@@ -2,7 +2,7 @@ from path import Path
 from collections import deque
 
 from . import config
-import cairo
+from astronex.compat import cairo
 
 zodlet = ( 'q','w','e','r','t','y','u','i','o','p','a','s' )
 plantuples = (('d',30.0,'pers'), ('f',32.0,'pers'), ('h',26.0,'tool'), ('j',26.0,'tool'),
@@ -163,7 +163,7 @@ class Zodiac(object):
 #    x_b,y_b,width,h,x_a,y_a = cr.text_extents(s)
 #    DrawMixin.asp_extents[s] = (x_b,width,h)
 def test():
-    import cairo
+    #from astronex.compat import cairo
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,100,100)
     context = cairo.Context(surface)
     config.read_config(Path("/home/jose/.astronex"))

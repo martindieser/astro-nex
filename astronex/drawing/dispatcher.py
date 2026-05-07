@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import gtk,cairo
+from astronex.compat import Gdk, cairo
 import math
 from .coredraw import CoreMixin
 from .progsheet import ProgMixin
@@ -884,10 +884,10 @@ class DrawMixin(CoreMixin,ProgMixin,ProfileMixin,BioMixin,DiagramMixin,SheetMixi
     @classmethod
     def set_op_AP(dispatcher,for_op,state):
         global AP_DEG
-        if not state & gtk.gdk.CONTROL_MASK:
+        if not state & Gdk.CONTROL_MASK:
             am = 180
         else:
-            am = [1,-1][state & gtk.gdk.SHIFT_MASK] * 30
+            am = [1,-1][state & Gdk.SHIFT_MASK] * 30
         ap = (AP_DEG + am) % 360
         AP_DEG = ap
         chartob = dispatcher.get_chartob(for_op)

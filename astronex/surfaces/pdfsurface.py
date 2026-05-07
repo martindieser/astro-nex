@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
+from astronex.compat import Gtk, Gdk, pango, cairo, pangocairo
 import os
 import sys
-import gtk
-import cairo
-import pango
-import pangocairo
 from .. drawing.dispatcher import DrawMixin
 from .. gui.plagram_dlg import PgMixin
 from .. drawing.datasheets import labels
@@ -48,14 +44,14 @@ class DrawPdf(object):
 
     @staticmethod
     def clicked(boss):
-        dialog = gtk.FileChooserDialog(_("Guardar..."),
+        dialog = Gtk.FileChooserDialog(_("Guardar..."),
                                     None,
-                                    gtk.FILE_CHOOSER_ACTION_SAVE,
-                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                        gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-        dialog.set_default_response(gtk.RESPONSE_OK)
+                                    Gtk.FileChooserAction.SAVE,
+                                    (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                                        Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
+        dialog.set_default_response(Gtk.ResponseType.OK)
 
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name(_("Documento Pdf "))
         filter.add_mime_type("application/pdf")
         filter.add_pattern("*.pdf")
@@ -71,9 +67,9 @@ class DrawPdf(object):
 
         filename = None
         response = dialog.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             filename = dialog.get_filename()
-        elif response == gtk.RESPONSE_CANCEL:
+        elif response == Gtk.ResponseType.CANCEL:
             pass
         dialog.destroy()
 
@@ -95,7 +91,7 @@ class DrawPdf(object):
             w,h = h,w
         surface = cairo.PDFSurface(filename,w,h)
         surface.set_fallback_resolution(300,300)
-        cr = pangocairo.CairoContext(cairo.Context(surface))
+        cr = cairo.Context(surface)
         cr.rectangle(0,0,w,h)
         cr.clip()
         cr.set_source_rgb(1.0,1.0,1.0)
@@ -123,7 +119,7 @@ class DrawPdf(object):
                 h *= 0.7
                 w *= 0.95
                 cr.translate((PDFW - w)/2,(PDFH-h)/3) 
-            elif curr.curr_op.startswith('subjec'):
+            elif curr_op.startswith('subjec'):
                 h *= 0.9 
                 w *= 0.9
                 cr.translate((PDFH - w)/10,0.0)
@@ -163,7 +159,7 @@ class DrawPdf(object):
         filename = os.path.join(folder,filename)
         surface = cairo.PDFSurface(filename,w,h)
         surface.set_fallback_resolution(300,300)
-        cr = pangocairo.CairoContext(cairo.Context(surface))
+        cr = cairo.Context(surface)
         cr.rectangle(0,0,w,h)
         cr.clip()
         cr.set_source_rgb(1.0,1.0,1.0)
@@ -216,7 +212,7 @@ class DrawPdf(object):
             filename = os.path.join(folder,filename)
             surface = cairo.PDFSurface(filename,w,h)
             surface.set_fallback_resolution(300,300)
-            cr = pangocairo.CairoContext(cairo.Context(surface))
+            cr = cairo.Context(surface)
             cr.set_source_rgb(1.0,1.0,1.0)
             cr.rectangle(0,0,w,h)
             cr.fill()
@@ -254,7 +250,7 @@ class DrawPdf(object):
         date = datetime.now().strftime("%d/%m/%Y")
         font = pango.FontDescription(opts.font)
         font.set_size(8*pango.SCALE)
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         layout.set_font_description(font)
         layout.set_text("Astro-Nex %s" % version)
         cr.set_source_rgb(0.2,0,0.9)
@@ -281,7 +277,7 @@ class DrawPdf(object):
         curr_op = curr.curr_op
         clickmode = curr.clickmode
         
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         layout.set_font_description(font)
         date,time = parsestrtime(curr.curr_chart.date)
         date = date + " " + time.split(" ")[0]

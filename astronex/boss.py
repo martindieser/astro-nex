@@ -61,7 +61,7 @@ class Manager(object):
         view = self.mpanel.chooser.notebook.get_nth_page(0)
         view.set_cursor(0,)
         view.grab_focus()
-        self.da.drawer.hoff = self.da.allocation.width * 0.125
+        self.da.drawer.hoff = self.da.get_allocation().width * 0.125
         self.da.drawer.gridw = self.da.drawer.hoff * 6
         self.da.drawer.set_AP_DEG()
 

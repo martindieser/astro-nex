@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-import gtk
-import pango
+from astronex.compat import Gtk, Gdk, pango
 from .. drawing.dispatcher import DrawMixin
 
-class PlanSelector(gtk.Dialog):
+class PlanSelector(Gtk.Dialog):
     '''Planet selector'''
 
     def __init__(self,parent):
@@ -11,18 +10,18 @@ class PlanSelector(gtk.Dialog):
         self.notwanted = set()
         self.plet = ['d','f','h','j','k','l','g','z','x','c','v']
         
-        gtk.Dialog.__init__(self,
+        Gtk.Dialog.__init__(self,
                 _("Selector de aspectos"), parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_CLOSE, gtk.RESPONSE_NONE,))
+                Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                (Gtk.STOCK_CLOSE, Gtk.ResponseType.NONE,))
 
         #self.set_size_request(400,580)
-        self.vbox.set_border_width(3)
-        frame = gtk.Frame(_("Ocultar"))
+        self.get_content_area().set_border_width(3)
+        frame = Gtk.Frame(label=_("Ocultar"))
         frame.set_border_width(3)
         
         frame.add(self.create_buttonlist())
-        self.vbox.pack_start(frame,False)
+        self.get_content_area().pack_start(frame,False,False,0)
         
         self.connect("response", self.dlg_response)
         self.connect('key-press-event', self.on_key_press_event,parent) 
@@ -32,13 +31,13 @@ class PlanSelector(gtk.Dialog):
 
     def create_buttonlist(self):
         font = pango.FontDescription("Astro-Nex")
-        vbuttonbox = gtk.VButtonBox() 
+        vbuttonbox = Gtk.VButtonBox() 
         for let in self.plet:
-            but = gtk.ToggleButton(let)
-            but.child.modify_font(font)
+            but = Gtk.ToggleButton(label=let)
+            but.get_child().override_font(font)
             but.set_mode(True)
             but.connect("toggled",self.on_but_toggled)
-            vbuttonbox.pack_start(but,False,False)
+            vbuttonbox.pack_start(but,False,False,0)
         return vbuttonbox
 
     def on_but_toggled(self,but):
@@ -56,7 +55,7 @@ class PlanSelector(gtk.Dialog):
         return
     
     def on_key_press_event(self,window,event,parent): 
-        if event.keyval == gtk.keysyms.Escape:
+        if event.keyval == Gdk.KEY_Escape:
             parent.boss.mpanel.toolbar.get_nth_item(3).set_active(False) 
         return True
 

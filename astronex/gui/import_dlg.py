@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys,os
-import gtk
+from astronex.compat import Gtk, Gdk, GObject, pango, cairo
 import datetime
 import re
 import astronex.state as state
@@ -238,16 +238,16 @@ usa = {
 
 brackets = re.compile(' \[.*\]?')
 
-class Console(gtk.VBox):
+class Console(Gtk.VBox):
     def __init__(self,font):
-        gtk.VBox.__init__(self, spacing=2)
+        Gtk.VBox.__init__(self, spacing=2)
         self.set_border_width(2)
-        self.scrolledwin = gtk.ScrolledWindow()
+        self.scrolledwin = Gtk.ScrolledWindow()
         self.scrolledwin.show()
-        self.pack_start(self.scrolledwin, padding=1)
-        self.text = gtk.TextView()
+        self.pack_start(self.scrolledwin, True, True, 1)
+        self.text = Gtk.TextView()
         self.text.set_editable(True)
-        self.text.set_wrap_mode(gtk.WRAP_WORD)
+        self.text.set_wrap_mode(Gtk.WrapMode.WORD)
         self.scrolledwin.add(self.text)
         self.buffer = self.text.get_buffer() 
         self.end = self.buffer.create_mark('end',self.buffer.get_end_iter(),False)
@@ -358,8 +358,8 @@ def parse_aaf(file,tname,con,sim,browser,encoding):
             buf.insert_at_cursor(_("Importando %s %s\n") % (first,last))
             con.text.scroll_to_mark(buf.get_insert(),0.0,True,0.0,0.0)
             n += 1
-            while (gtk.events_pending()):
-                gtk.main_iteration()
+            while (Gtk.events_pending()):
+                Gtk.main_iteration()
         elif pending and line.startswith('#B93'): 
             loc = state.Locality()
             b = line[5:].split(',')
@@ -410,8 +410,8 @@ def parse_aaf(file,tname,con,sim,browser,encoding):
             buf.insert_at_cursor(_("Importando %s %s\n") % (first,last))
             n += 1
             con.text.scroll_to_mark(buf.get_insert(),0.0,True,0.0,0.0)
-            while (gtk.events_pending()):
-                gtk.main_iteration()
+            while (Gtk.events_pending()):
+                Gtk.main_iteration()
     #end
     if not sim:
         browser.tables.emit('changed')
@@ -448,21 +448,21 @@ def dlg_response(ibut,entry,tentry,con,but,enc,browser):
         if not simul:
             if tn in tablelist:
                 result = replacedialog(tn)
-                if result != gtk.RESPONSE_OK:
+                if result != Gtk.ResponseType.OK:
                     return 
         encoding = codes[enc.get_active()]
         #print encoding
         parse_aaf(file,tn,con,simul,browser,encoding)
 
 def on_browse_but(but,entry):
-    dialog = gtk.FileChooserDialog("Abrir archivo...",
-                                None,
-                                gtk.FILE_CHOOSER_ACTION_OPEN,
-                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                    gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-    dialog.set_default_response(gtk.RESPONSE_OK)
+    dialog = Gtk.FileChooserDialog(title="Abrir archivo...",
+                                transient_for=None,
+                                action=Gtk.FileChooserAction.OPEN,
+                                buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                                    Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+    dialog.set_default_response(Gtk.ResponseType.OK)
 
-    filter = gtk.FileFilter()
+    filter = Gtk.FileFilter()
     filter.set_name(_("Archivo AAF"))
     filter.add_mime_type("text/plain")
     filter.add_pattern("*.aaf")
@@ -475,9 +475,9 @@ def on_browse_but(but,entry):
 
     filename = None
     response = dialog.run()
-    if response == gtk.RESPONSE_OK:
+    if response == Gtk.ResponseType.OK:
         filename = dialog.get_filename()
-    elif response == gtk.RESPONSE_CANCEL:
+    elif response == Gtk.ResponseType.CANCEL:
         pass
     dialog.destroy()
     if filename is not None and filename != '':
@@ -486,9 +486,9 @@ def on_browse_but(but,entry):
 
 def replacedialog(tbl):
     msg = _("La tabla %s existe. Reemplazarla, perdiendo los datos?") % tbl
-    dialog = gtk.MessageDialog(None, gtk.DIALOG_MODAL,
-            gtk.MESSAGE_WARNING,
-            gtk.BUTTONS_OK_CANCEL, msg);
+    dialog = Gtk.MessageDialog(transient_for=None, flags=Gtk.DialogFlags.MODAL,
+            type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.OK_CANCEL, message_format=msg);
     result = dialog.run()
     dialog.destroy()
     return result
@@ -502,49 +502,49 @@ def export_chart(ch):
 #A93:Afa144,Edgar Allan,M,19.01.1809g,01:48:00,Boston,USMA-Massachusetts 
 #B93:*,42N21:00,071W03:00,05hw00,0
 
-class ImportPanel(gtk.HBox):
+class ImportPanel(Gtk.HBox):
     def __init__(self,parent):
         global curr
         curr = parent.boss.get_state()
         browser = parent.mpanel.browser
-        gtk.HBox.__init__(self)
+        Gtk.HBox.__init__(self)
         cons = Console(browser.font)
         
-        frame = gtk.Frame()
-        table = gtk.Table(2,4,True)
-        label = gtk.Label(_('Importar archivo: '))
-        entry = gtk.Entry()
-        button = gtk.Button(_('Examinar'))
+        frame = Gtk.Frame()
+        table = Gtk.Table(2,4,True)
+        label = Gtk.Label(_('Importar archivo: '))
+        entry = Gtk.Entry()
+        button = Gtk.Button(_('Examinar'))
         button.connect('clicked',on_browse_but,entry)
         table.attach(label,0,1,0,1)
         table.attach(entry,1,2,0,1)
         table.attach(button,2,3,0,1)
         
-        label = gtk.Label(_('Nombre tabla: '))
-        tentry = gtk.Entry()
+        label = Gtk.Label(_('Nombre tabla: '))
+        tentry = Gtk.Entry()
         tentry.set_text('importemp')
-        button = gtk.CheckButton(_('Simular'))
+        button = Gtk.CheckButton(_('Simular'))
         button.set_active(True)
         table.attach(label,0,1,1,2)
         table.attach(tentry,1,2,1,2)
         table.attach(button,2,3,1,2)
         
-        encoding = gtk.RadioButton(None,'Win-1252')
+        encoding = Gtk.RadioButton(None,'Win-1252')
         encoding.set_active(True)
         table.attach(encoding,3,4,0,1)
-        encoding = gtk.RadioButton(encoding,'utf-8')
+        encoding = Gtk.RadioButton(encoding,'utf-8')
         table.attach(encoding,3,4,1,2)
     
         frame.add(table)
-        vbox = gtk.VBox()
-        vbox.pack_start(frame,False,False)
-        vbox.pack_start(cons) 
-        ibutton = gtk.Button(_('Importar'))
+        vbox = Gtk.VBox()
+        vbox.pack_start(frame,False,False,0)
+        vbox.pack_start(cons,True,True,0)
+        ibutton = Gtk.Button(_('Importar'))
         ibutton.connect("clicked",dlg_response,entry,tentry,cons,button,encoding,browser)
-        hbox = gtk.HBox()
-        hbox.pack_end(ibutton,False,False)    
-        vbox.pack_start(hbox,False,False)    
-        frame = gtk.Frame()
+        hbox = Gtk.HBox()
+        hbox.pack_end(ibutton,False,False,0)
+        vbox.pack_start(hbox,False,False,0)
+        frame = Gtk.Frame()
         frame.set_border_width(6)
         frame.add(vbox)
         self.add(frame)

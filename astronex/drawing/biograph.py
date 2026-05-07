@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-import gtk
-import cairo
-import pango
-import pangocairo
+from astronex.compat import Gdk, pango, cairo, pangocairo
 from datetime import datetime,timedelta
 from math import pi as PI
 import math
@@ -33,7 +30,7 @@ class BioMixin(object):
 
         if surface.__class__.__name__ in ['DrawMaster','DrawAux']:
             info = { 'button': -1 }
-            surface.set_data("move-info", info)
+            surface.move_info = info
             surface.connect('event',self.pe_rulercb,surface)
         
         chart = curr.curr_chart
@@ -47,11 +44,11 @@ class BioMixin(object):
         global _bio, ruler, biodate
         _bio = h
         if frac:
-            ruler[0] = (frac*self.gridw+self.hoff)/self.surface.allocation.width 
+            ruler[0] = (frac*self.gridw+self.hoff)/self.surface.get_allocation().width 
         else:
             cycles =  curr.curr_chart.get_cycles(curr.date.dt)
             house_t = curr.curr_chart.house_time_lapsus(h,cycles)
-            hpoint = self.surface.allocation.width*ruler[0]
+            hpoint = self.surface.get_allocation().width*ruler[0]
             rulfrac = (hpoint - self.hoff) / self.gridw
             ruldays = rulfrac * house_t['lapsus'].days
             biodate = house_t['begin']+timedelta(days=ruldays) 
@@ -60,7 +57,7 @@ class BioMixin(object):
     def set_bio_from_date(self,bio,frac):
         global _bio, ruler
         _bio = bio 
-        ruler[0] = (frac*self.gridw+self.hoff)/self.surface.allocation.width 
+        ruler[0] = (frac*self.gridw+self.hoff)/self.surface.get_allocation().width 
         if curr.curr_op.startswith('bio'):
             self.surface.queue_draw()
 
@@ -73,27 +70,27 @@ class BioMixin(object):
             if not curr.curr_op.startswith('bio') or curr.opmode != 'simple' or curr.curr_chart == curr.now:
                 return False 
         state =  event.get_state()
-        info = child.get_data("move-info")
-        width = child.allocation.width
-        if event.type == gtk.gdk._2BUTTON_PRESS:
+        info = child.move_info
+        width = child.get_allocation().width
+        if event.type == Gdk._2BUTTON_PRESS:
             boss.da.panel.nowbut.emit('clicked')
             info['button'] = 100; #now
             return True
-        elif event.type == gtk.gdk.BUTTON_PRESS:
+        elif event.type == Gdk.BUTTON_PRESS:
             if event.button != 1: return False
             if info['button'] < 0:
                 info['button'] = event.button
             elif info['button'] == 100:
                 info['button'] = -1
             return True 
-        elif event.type == gtk.gdk.BUTTON_RELEASE:
+        elif event.type == Gdk.BUTTON_RELEASE:
             if info['button'] < 0: 
                 return True
             if info['button'] == event.button:
                 info['button'] = -1;
                 ruler[0] = event.x / width
                 release = True
-        elif gtk.gdk.MOTION_NOTIFY:
+        elif Gdk.MOTION_NOTIFY:
             if info['button'] < 0 or info['button'] == 100:
                 info['button'] = -1
                 return False
@@ -163,7 +160,7 @@ class BioMixin(object):
         cycles =  chart.get_cycles(curr.date.dt)
         self.house_t = chart.house_time_lapsus(bh,cycles)
         font = pango.FontDescription(self.opts.font)
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font.set_size(int(14*pango.SCALE*minim*MAGICK_FONTSCALE))
         layout.set_font_description(font)
         # vert lines
@@ -1042,7 +1039,7 @@ class BioMixin(object):
             cr.move_to(hpoint+x_b*2*self.minim*MAGICK_FONTSCALE,self.voff)
             cr.text_path(strdate)
             cr.fill()
-            if self.surface.__class__.__name__ is 'DrawMaster':
+            if self.surface.__class__.__name__ == 'DrawMaster':
                 release = False
     
 def sign_col_soul(col,voff):

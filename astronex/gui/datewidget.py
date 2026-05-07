@@ -1,7 +1,4 @@
-import gobject
-import pango
-import gtk
-from gtk import gdk,keysyms
+from astronex.compat import GObject, pango, Gtk, Gdk
 import datetime
 from pytz import timezone
 from .. extensions.validation import MaskEntry,ValidationError
@@ -9,57 +6,57 @@ import time
 from .. boss import boss
 curr = boss.get_state()
 
-def set_background(widget, color, state=gtk.STATE_NORMAL):
-    widget.modify_base(state, gdk.color_parse(color))
+def set_background(widget, color, state=Gtk.StateFlags.NORMAL):
+    widget.modify_base(state, Gdk.color_parse(color))
 
-class _DateEntryPopup(gtk.Window):
+class _DateEntryPopup(Gtk.Window):
     __gsignals__ = {
-            'date-selected': (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(object,)),
+            'date-selected': (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,(object,)),
             }
 
     def __init__(self, dateentry):
-        gtk.Window.__init__(self, gtk.WINDOW_POPUP)
-        self.add_events(gdk.BUTTON_PRESS_MASK)
+        Gtk.Window.__init__(self, Gtk.WindowType.POPUP)
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.connect('key-press-event', self._on__key_press_event)
         self.connect('button-press-event', self._on__button_press_event)
         self._dateentry = dateentry
 
-        frame = gtk.Frame()
-        frame.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        frame = Gtk.Frame()
+        frame.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
         self.add(frame)
         frame.show()
 
-        vbox = gtk.VBox()
+        vbox = Gtk.VBox()
         vbox.set_border_width(6)
         frame.add(vbox)
         vbox.show()
         self._vbox = vbox
 
-        self.calendar = gtk.Calendar()
+        self.calendar = Gtk.Calendar()
         self.calendar.connect('day-selected-double-click',
                                self._on_calendar__day_selected_double_click)
-        vbox.pack_start(self.calendar, False, False)
+        vbox.pack_start(self.calendar, False, False, 0)
         self.calendar.show()
 
-        buttonbox = gtk.HButtonBox()
+        buttonbox = Gtk.HButtonBox()
         buttonbox.set_border_width(6)
-        buttonbox.set_layout(gtk.BUTTONBOX_SPREAD)
-        vbox.pack_start(buttonbox, False, False)
+        buttonbox.set_layout(Gtk.ButtonBoxStyle.SPREAD)
+        vbox.pack_start(buttonbox, False, False, 0)
         buttonbox.show()
 
         for label, callback in [(_('_Hoy'), self._on_today__clicked),
                                 (_('_Cancelar'), self._on_cancel__clicked),
                                 (_('_Aceptar'), self._on_select__clicked)]:
-            button = gtk.Button(label, use_underline=True)
+            button = Gtk.Button(label, use_underline=True)
             button.connect('clicked', callback)
-            buttonbox.pack_start(button)
+            buttonbox.pack_start(button, True, True, 0)
             button.show()
 
         self.set_resizable(False)
         self.set_screen(dateentry.get_screen())
 
         self.realize()
-        self.height = self._vbox.size_request()[1]
+        self.height = self._vbox.size_request().height
 
     def _on_calendar__day_selected_double_click(self, calendar):
         self.emit('date-selected', self.get_date())
@@ -71,7 +68,7 @@ class _DateEntryPopup(gtk.Window):
         # Also if the intersection of self and the event is empty, hide
         # the calendar
         if (tuple(self.allocation.intersect(
-              gdk.Rectangle(x=int(event.x), y=int(event.y),
+              Gdk.Rectangle(x=int(event.x), y=int(event.y),
                            width=1, height=1))) == (0, 0, 0, 0)):
             hide = True
 
@@ -89,19 +86,19 @@ class _DateEntryPopup(gtk.Window):
 
     def _on__key_press_event(self, window, event):
         keyval = event.keyval
-        state = event.state & gtk.accelerator_get_default_mod_mask()
-        if (keyval == keysyms.Escape or
-            ((keyval == keysyms.Up or keyval == keysyms.KP_Up) and
-             state == gdk.MOD1_MASK)):
+        state = event.state & Gtk.accelerator_get_default_mod_mask()
+        if (keyval == Gdk.KEY_Escape or
+            ((keyval == Gdk.KEY_Up or keyval == Gdk.KEY_KP_Up) and
+             state == Gdk.ModifierType.MOD1_MASK)):
             self.popdown()
             return True
-        elif keyval == keysyms.Tab:
+        elif keyval == Gdk.KEY_Tab:
             self.popdown()
             return True
-        elif (keyval == keysyms.Return or
-              keyval == keysyms.space or
-              keyval == keysyms.KP_Enter or
-              keyval == keysyms.KP_Space):
+        elif (keyval == Gdk.KEY_Return or
+              keyval == Gdk.KEY_space or
+              keyval == Gdk.KEY_KP_Enter or
+              keyval == Gdk.KEY_KP_Space):
             self.emit('date-selected', self.get_date())
             return True
 
@@ -118,12 +115,12 @@ class _DateEntryPopup(gtk.Window):
 
     def _popup_grab_window(self):
         activate_time = 0
-        if gdk.pointer_grab(self.window, True,
-                            (gdk.BUTTON_PRESS_MASK |
-                             gdk.BUTTON_RELEASE_MASK |
-                             gdk.POINTER_MOTION_MASK),
+        if Gdk.pointer_grab(self.window, True,
+                            (Gdk.EventMask.BUTTON_PRESS_MASK |
+                             Gdk.EventMask.BUTTON_RELEASE_MASK |
+                             Gdk.EventMask.POINTER_MOTION_MASK),
                              None, None, activate_time) == 0:
-            if gdk.keyboard_grab(self.window, True, activate_time) == 0:
+            if Gdk.keyboard_grab(self.window, True, activate_time) == 0:
                 return True
             else:
                 self.window.get_display().pointer_ungrab(activate_time);
@@ -171,14 +168,14 @@ class _DateEntryPopup(gtk.Window):
         @param date: date to select
         """
         combo = self._dateentry
-        if not (combo.flags() & gtk.REALIZED):
+        if not (combo.get_realized()):
             return
 
         treeview = self.calendar
-        if treeview.flags() & gtk.MAPPED:
+        if treeview.get_mapped():
             return
         toplevel = combo.get_toplevel()
-        if isinstance(toplevel, gtk.Window) and toplevel.group:
+        if isinstance(toplevel, Gtk.Window) and toplevel.group:
             toplevel.group.add_window(self)
 
         x, y, width, height = self._get_position()
@@ -190,7 +187,7 @@ class _DateEntryPopup(gtk.Window):
             self.set_date(date)
         self.grab_focus()
 
-        if not (self.calendar.flags() & gtk.HAS_FOCUS):
+        if not (self.calendar.get_has_focus()):
             self.calendar.grab_focus()
 
         if not self._popup_grab_window():
@@ -201,7 +198,7 @@ class _DateEntryPopup(gtk.Window):
 
     def popdown(self):
         combo = self._dateentry
-        if not (combo.flags() & gtk.REALIZED):
+        if not (combo.get_realized()):
             return
 
         self.grab_remove()
@@ -220,14 +217,14 @@ class _DateEntryPopup(gtk.Window):
 
 
 
-class DateEntry(gtk.HBox):
+class DateEntry(Gtk.HBox):
     __gsignals__ = {
-            'changed': (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,()),
+            'changed': (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE,()),
             }
 
     def __init__(self,manager,fullpanel=True):
         self.boss = manager
-        gtk.HBox.__init__(self)
+        Gtk.HBox.__init__(self)
         self._popping_down = False
         dt = datetime.datetime.now()
         self.date = dt.date()
@@ -235,29 +232,29 @@ class DateEntry(gtk.HBox):
         self.dateformat = "%d/%m/%Y"
         self.timeformat = "%H:%M:%S"
 
-        vbox = gtk.VBox()
+        vbox = Gtk.VBox()
         self.dateentry = MaskEntry()
         self.dateentry.set_mask('00/00/0000')
         self.dateentry.connect('changed',self.on_entry_changed)
         self.dateentry.connect('focus_out_event',self.on_entry_focus_out)
         mask = self.dateentry.get_mask()
         self.dateentry.set_width_chars(len(mask))
-        hbox1 = gtk.HBox()
+        hbox1 = Gtk.HBox()
         if fullpanel:
-            label = gtk.Label("    "+_("Fecha:")+"    ")
-            hbox1.pack_start(label,False,False)
-            sg = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+            label = Gtk.Label("    "+_("Fecha:")+"    ")
+            hbox1.pack_start(label,False,False, 0)
+            sg = Gtk.SizeGroup(Gtk.SizeGroupMode.HORIZONTAL)
             sg.add_widget(label)
-        hbox1.pack_start(self.dateentry,False,False)
+        hbox1.pack_start(self.dateentry,False,False, 0)
 
-        self._button = gtk.ToggleButton()
+        self._button = Gtk.ToggleButton()
         self._button.connect('scroll-event', self.on_entry_scroll_event)
         self._button.connect('toggled', self.on_button_toggled)
         self._button.set_focus_on_click(False)
-        hbox1.pack_start(self._button, False, False)
+        hbox1.pack_start(self._button, False, False, 0)
         self._button.show()
 
-        arrow = gtk.Arrow(gtk.ARROW_DOWN, gtk.SHADOW_NONE)
+        arrow = Gtk.Arrow(Gtk.ArrowType.DOWN, Gtk.ShadowType.NONE)
         self._button.add(arrow)
         arrow.show()
 
@@ -266,57 +263,58 @@ class DateEntry(gtk.HBox):
         self._popup.connect('hide', self._on_popup__hide)
         self._popup.set_size_request(-1, 24)
 
-        vbox.pack_start(hbox1,False,False)
+        vbox.pack_start(hbox1,False,False, 0)
         if fullpanel:
-            label = gtk.Label(_("Hora:"))
+            label = Gtk.Label(_("Hora:"))
             self.timeentry = MaskEntry()
             self.timeentry.set_mask('00:00:00')
             self.timeentry.connect('changed',self.on_entry_changed)
             self.timeentry.connect('focus_out_event',self.on_entry_focus_out)
             mask = self.timeentry.get_mask()
             self.timeentry.set_width_chars(len(mask))
-            hbox2 = gtk.HBox()
-            hbox2.pack_start(label,False,False)
-            hbox2.pack_start(self.timeentry,False,False)
+            hbox2 = Gtk.HBox()
+            hbox2.pack_start(label,False,False, 0)
+            hbox2.pack_start(self.timeentry,False,False, 0)
             sg.add_widget(label)
-            vbox.pack_start(hbox2,False,False)
-            self.pack_end(self.create_delta_panel(),False,False)
+            vbox.pack_start(hbox2,False,False, 0)
+            self.pack_end(self.create_delta_panel(),False,False, 0)
 
-        self.pack_start(vbox,False,False)
+        self.pack_start(vbox,False,False, 0)
 
     def create_delta_panel(self):
-        vbox = gtk.VBox()
-        adj = gtk.Adjustment(1,1,15,1,5)
-        spin = gtk.SpinButton(adj)
+        vbox = Gtk.VBox()
+        adj = Gtk.Adjustment(1,1,15,1,5,0)
+        spin = Gtk.SpinButton()
+        spin.set_adjustment(adj)
         spin.set_wrap(True)
         spin.set_alignment(1.0)
         self.spin = spin
-        vbox.pack_start(spin,False,False)
+        vbox.pack_start(spin,False,False, 0)
 
-        hbox = gtk.HBox()
-        button = gtk.Button()
-        arrow = gtk.Arrow(gtk.ARROW_LEFT, gtk.SHADOW_NONE)
+        hbox = Gtk.HBox()
+        button = Gtk.Button()
+        arrow = Gtk.Arrow(Gtk.ArrowType.LEFT, Gtk.ShadowType.NONE)
         button.add(arrow)
-        button.set_data('dir','<')
+        button.dir = '<'
         button.set_size_request(26,-1)
         button.connect('clicked',self.on_panel_arrow_clicked)
-        hbox.pack_start(button,False,False)
+        hbox.pack_start(button,False,False, 0)
 
-        button = gtk.ToggleButton(_('minutos'))
+        button = Gtk.ToggleButton(_('minutos'))
         button.set_size_request(60,-1)
         button.connect('toggled',self.on_delta_toggled)
         button.connect('scroll-event', self.on_delta_scroll_event)
         self.hintbut = button
-        hbox.pack_start(button,False,False)
+        hbox.pack_start(button,False,False, 0)
 
-        button = gtk.Button()
-        arrow = gtk.Arrow(gtk.ARROW_RIGHT, gtk.SHADOW_NONE)
+        button = Gtk.Button()
+        arrow = Gtk.Arrow(Gtk.ArrowType.RIGHT, Gtk.ShadowType.NONE)
         button.add(arrow)
-        button.set_data('dir','>')
+        button.dir = '>'
         button.set_size_request(26,-1)
         button.connect('clicked',self.on_panel_arrow_clicked)
-        hbox.pack_start(button,False,False)
-        vbox.pack_start(hbox,False,False)
+        hbox.pack_start(button,False,False, 0)
+        vbox.pack_start(hbox,False,False, 0)
         return vbox
 
     def do_grab_focus():
@@ -388,9 +386,9 @@ class DateEntry(gtk.HBox):
             raise ValidationError('value error: %s' % text)
 
     def on_entry_scroll_event(self,entry,event):
-        if event.direction == gdk.SCROLL_UP:
+        if event.direction == Gdk.ScrollDirection.UP:
             amount = 1
-        elif event.direction == gdk.SCROLL_DOWN:
+        elif event.direction == Gdk.ScrollDirection.DOWN:
             amount = -1
         else:
             return
@@ -423,7 +421,7 @@ class DateEntry(gtk.HBox):
 
     def on_panel_arrow_clicked(self,but):
         delta = self.spin.get_value_as_int()
-        if but.get_data('dir') == '<':
+        if but.dir == '<':
             delta = -delta
         self.change_on_delta(delta)
 
@@ -434,9 +432,9 @@ class DateEntry(gtk.HBox):
 
     def on_delta_scroll_event(self,entry,event):
         delta = self.spin.get_value_as_int()
-        if event.direction == gdk.SCROLL_UP:
+        if event.direction == Gdk.ScrollDirection.UP:
             amount = 1 * delta
-        elif event.direction == gdk.SCROLL_DOWN:
+        elif event.direction == Gdk.ScrollDirection.DOWN:
             amount = -1 * delta
         else:
             return

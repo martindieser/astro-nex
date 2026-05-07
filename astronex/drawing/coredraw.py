@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import cairo, pango
+from astronex.compat import pango, cairo, pangocairo
 import math
-from itertools importcycle
+from itertools import cycle
 from math import pi as PI
 from .roundedcharts import RadixChart, NodalChart
 from .. boss import boss
@@ -715,7 +715,7 @@ class CoreMixin(object):
     def d_coup_dates(self,cr,w,h,ch,col,dts):
         cr.save()
         radius = min(w,h) * 0.47
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(7*pango.SCALE*radius*2*MAGICK_FONTSCALE))
         layout.set_font_description(font)

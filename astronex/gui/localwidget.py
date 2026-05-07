@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import gtk
+from astronex.compat import Gtk, Gdk, GObject, pango, cairo
 from .. countries import cata_reg
 from .. boss import boss
 from .searchview import SearchView
@@ -9,9 +9,9 @@ def filter_region(model,iter,code):
     value = model.get_value(iter,1)
     return value == code 
 
-class LocWidget(gtk.VBox):
+class LocWidget(Gtk.VBox):
     def __init__(self,default=False):
-        gtk.VBox.__init__(self)
+        Gtk.VBox.__init__(self)
         self.set_homogeneous(False)
 
         if not default:
@@ -33,32 +33,34 @@ class LocWidget(gtk.VBox):
         self.countries = curr.datab.get_states_tuple(curr.usa)
         self.sortlist = sorted(self.countries) 
 
-        compl = gtk.EntryCompletion()
+        compl = Gtk.EntryCompletion()
         # country label and check btns 
-        hbox = gtk.HBox()
+        hbox = Gtk.HBox()
         l = [_('Pais'),_('Estado')][curr.usa]
-        label = gtk.Label(l)
-        hbox.pack_start(label,False,False)
-        self.check = gtk.CheckButton(_("Usa"))
+        label = Gtk.Label(l)
+        hbox.pack_start(label,False,False, 0)
+        self.check = Gtk.CheckButton(_("Usa"))
         self.check.set_active(curr.usa)
         self.check.connect('toggled',self.on_usa_toggled,compl,label)
-        hbox.pack_start(self.check,True,False)
+        hbox.pack_start(self.check,True,False, 0)
         
-        self.filtcheck = gtk.CheckButton(_("Filtro"))
+        self.filtcheck = Gtk.CheckButton(_("Filtro"))
         self.filtcheck.connect('toggled',self.on_filter_toggled)
-        hbox.pack_start(self.filtcheck,True,False) 
-        label = gtk.Label(_('Region'))
-        hbox.pack_end(label,True,False)
+        hbox.pack_start(self.filtcheck,True,False, 0) 
+        label = Gtk.Label(_('Region'))
+        hbox.pack_end(label,True,False, 0)
         hbox.set_border_width(3) 
         hbox.set_homogeneous(True) 
-        self.pack_start(hbox,False,False)
+        self.pack_start(hbox,False,False, 0)
 
         # country combo
-        hbox = gtk.HBox()
-        liststore = gtk.ListStore(str,str)
-        self.country_combo = gtk.ComboBoxEntry(liststore)
-        cell = gtk.CellRendererText()
-        self.country_combo.pack_start(cell)
+        hbox = Gtk.HBox()
+        liststore = Gtk.ListStore(str,str)
+        self.country_combo = Gtk.ComboBox.new_with_model_and_entry(liststore)
+        # self.country_combo.set_model(liststore)
+        self.country_combo.set_entry_text_column(0)
+        cell = Gtk.CellRendererText()
+        self.country_combo.pack_start(cell, True)
         
         for n,c in self.sortlist:
             liststore.append([n,c])
@@ -70,19 +72,21 @@ class LocWidget(gtk.VBox):
         
         compl.set_text_column(0)
         compl.set_model(self.country_combo.get_model())
-        self.country_combo.child.set_completion(compl)#entry
+        self.country_combo.get_child().set_completion(compl)#entry
         compl.connect('match_selected', self.on_count_match)
 
         self.country_combo.set_wrap_width(4)
         self.country_combo.connect('changed',self.on_count_selected) 
-        hbox.pack_start(self.country_combo,False,False)
+        hbox.pack_start(self.country_combo,False,False, 0)
 
         
         # region combo
-        liststore = gtk.ListStore(str,str)
-        self.reg_combo = gtk.ComboBoxEntry(liststore)
-        cell = gtk.CellRendererText()
-        self.reg_combo.pack_start(cell)
+        liststore = Gtk.ListStore(str,str)
+        self.reg_combo = Gtk.ComboBox.new_with_model_and_entry(liststore)
+        # self.reg_combo.set_model(liststore)
+        self.reg_combo.set_entry_text_column(0)
+        cell = Gtk.CellRendererText()
+        self.reg_combo.pack_start(cell, True)
         self.reg_combo.connect('changed',self.on_reg_selected)
         rlist = curr.datab.list_regions(country_code,curr.usa)
         if country_code == "SP" and boss.opts.lang == 'ca':
@@ -98,16 +102,16 @@ class LocWidget(gtk.VBox):
                 i = n
 
         self.reg_combo.set_active(i)
-        hbox.pack_end(self.reg_combo,False,False)
-        self.pack_start(hbox,False,False)
+        hbox.pack_end(self.reg_combo,False,False,0)
+        self.pack_start(hbox,False,False,0)
 
         # locality view
-        self.locmodel = gtk.ListStore(str,str,str)
-        #self.locview = gtk.TreeView(self.locmodel)
+        self.locmodel = Gtk.ListStore(str,str,str)
+        #self.locview = Gtk.TreeView(self.locmodel)
         self.locview = SearchView(self.locmodel)
         selection = self.locview.get_selection()
         selection.connect('changed',self.on_sel_changed)
-        selection.set_mode(gtk.SELECTION_SINGLE)
+        selection.set_mode(Gtk.SelectionMode.SINGLE)
         loclist = curr.datab.fetch_all_from_country(country_code,curr.usa)
         i = 0
         for n,c in enumerate(loclist):
@@ -115,16 +119,16 @@ class LocWidget(gtk.VBox):
             if city == c[0]:
                 i = n
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         cell.set_property('width-chars',38)
         cell.set_property('foreground','blue')
-        cellgeo = gtk.CellRendererText()
-        column = gtk.TreeViewColumn(None)
+        cellgeo = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn(None)
         column.pack_start(cell,False)
         column.pack_start(cellgeo,False)
         column.set_attributes(cell,text=0)
         column.set_attributes(cellgeo,text=2)
-        column.set_widget(gtk.HSeparator())
+        column.set_widget(Gtk.HSeparator())
         self.locview.append_column(column) 
         self.locview.set_headers_visible(False)
         #self.locview.set_enable_search(True)
@@ -132,10 +136,10 @@ class LocWidget(gtk.VBox):
         self.locview.scroll_to_cell(i)
         self.locview.connect('row-activated',self.on_row_activate)
 
-        sw = gtk.ScrolledWindow()
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        sw = Gtk.ScrolledWindow()
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         sw.add(self.locview) 
-        self.pack_start(sw)
+        self.pack_start(sw, True, True, 0)
 
 
     def on_reg_selected(self,combo):
@@ -154,13 +158,13 @@ class LocWidget(gtk.VBox):
         if not iter: return
         model = combo.get_model()
         code = str(model.get_value(iter,1),"utf-8")
-        liststore = gtk.ListStore(str,str)
+        liststore = Gtk.ListStore(str,str)
         rlist = curr.datab.list_regions(code,curr.usa)
         for r in rlist:
             liststore.append(r)
         self.reg_combo.set_model(liststore)
         self.reg_combo.set_active(0) 
-        liststore = gtk.ListStore(str,str,str)
+        liststore = Gtk.ListStore(str,str,str)
         loclist = curr.datab.fetch_all_from_country(code,curr.usa)
         for c in loclist:
             liststore.append(c)
@@ -187,7 +191,7 @@ class LocWidget(gtk.VBox):
             lbl.set_text(_("Pais"))
         self.countries = curr.datab.get_states_tuple(curr.usa)
         self.sortlist = sorted(self.countries)
-        model = gtk.ListStore(str,str)
+        model = Gtk.ListStore(str,str)
         for n,c in self.sortlist:
             model.append([n,c])
         self.country_combo.set_model(model)
@@ -242,7 +246,7 @@ class LocWidget(gtk.VBox):
             return
         self.countries = curr.datab.get_states_tuple(usa)
         self.sortlist = sorted(self.countries)
-        model = gtk.ListStore(str,str)
+        model = Gtk.ListStore(str,str)
         for n,c in self.sortlist:
             model.append([n,c])
         self.country_combo.set_model(model)
@@ -254,7 +258,7 @@ class LocWidget(gtk.VBox):
         else:
             self.country_combo.set_active(0)
         
-        liststore = gtk.ListStore(str,str,str)
+        liststore = Gtk.ListStore(str,str,str)
         loclist = curr.datab.fetch_all_from_country(boss.opts.country,usa)
         i = 0
         for n,c in enumerate(loclist):

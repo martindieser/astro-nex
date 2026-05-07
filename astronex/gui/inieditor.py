@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import gtk, gobject
-import cairo, pango
+from astronex.compat import Gtk, Gdk, GObject, pango, cairo
 from io import StringIO 
 from configobj import ConfigObj, ConfigObjError
 from path import Path
@@ -10,29 +9,28 @@ from .. config import reload_config
 
 boss = None
 
-class IniEditor(gtk.Dialog):
+class IniEditor(Gtk.Dialog):
     def __init__(self,parent):
         global boss
         boss = parent.boss
-        gtk.Window.__init__(self)
-        gtk.Dialog.__init__(self,
+        Gtk.Dialog.__init__(self,
                 _("Editor cfg.ini"), parent,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                (gtk.STOCK_CLOSE, gtk.RESPONSE_NONE,
-                    gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+                Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                (Gtk.STOCK_CLOSE, Gtk.ResponseType.NONE,
+                    Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
         
         self.set_size_request(480,520)
         self.set_transient_for(parent)
         self.set_resizable(True)
 
-        self.vbox.set_border_width(6)
-        sw = gtk.ScrolledWindow()
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        textview = gtk.TextView()
-        textview.modify_bg(gtk.STATE_NORMAL,gtk.gdk.color_parse("#000")) 
+        self.get_content_area().set_border_width(6)
+        sw = Gtk.ScrolledWindow()
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        textview = Gtk.TextView()
+        textview.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 1)) 
         textbuffer = textview.get_buffer()
         sw.add(textview)
-        self.vbox.pack_start(sw)
+        self.get_content_area().pack_start(sw, True, True, 0)
 
         cfgfile = Path.joinpath(boss.opts.home_dir,'cfg.ini')
         infile = open(cfgfile, "r")
@@ -49,7 +47,7 @@ class IniEditor(gtk.Dialog):
         self.show_all()
 
     def dlg_response(self,dialog,rid):
-        if rid == gtk.RESPONSE_OK:
+        if rid == Gtk.ResponseType.OK:
             start = self.textbuffer.get_start_iter()
             end = self.textbuffer.get_end_iter()
             text = self.textbuffer.get_text(start,end)
@@ -60,9 +58,9 @@ class IniEditor(gtk.Dialog):
                 conf.write()
                 reload_config(conf,boss)
             except ConfigObjError as e:
-                errdialog = gtk.MessageDialog(None, gtk.DIALOG_MODAL,
-                        gtk.MESSAGE_ERROR,
-                        gtk.BUTTONS_OK, e.message);
+                errdialog = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL,
+                        Gtk.MessageType.ERROR,
+                        Gtk.ButtonsType.OK, e.message);
                 result = errdialog.run()
                 errdialog.destroy()
                 line = int(e.message[22:-2])

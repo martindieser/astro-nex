@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
+from astronex.compat import Gtk, Gdk, pango, cairo
 import os
 import sys
-import gtk
-import cairo
-import pango
-import pangocairo
 from .. drawing.dispatcher import DrawMixin
 from .. drawing.datasheets import labels
 from .. boss import boss
@@ -31,12 +27,12 @@ def draw_page(op,context,npages,boss):
 
 def printpage(boss):
     filename = "test.pdf"
-    print_ = gtk.PrintOperation()
-    print_.set_unit(gtk.UNIT_POINTS)
+    print_ = Gtk.PrintOperation()
+    print_.set_unit(Gtk.Unit.POINTS)
     print_.set_n_pages(1)
     print_.set_export_filename(filename)
 
     print_.connect('draw_page', draw_page,boss)
-    res = print_.run(gtk.PRINT_OPERATION_ACTION_PRINT)
+    res = print_.run(Gtk.PrintOperationAction.PRINT)
     return
 

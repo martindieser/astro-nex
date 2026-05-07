@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-import gtk
-import cairo
-import pango
+from astronex.compat import Gtk, Gdk, pango, cairo, pangocairo
 import math
 from math import pi as PI
 from collections import deque
@@ -16,25 +13,24 @@ curr = boss.get_state()
 
 RAD = PI/ 180
 
-class DrawDiagram(gtk.DrawingArea):
+class DrawDiagram(Gtk.DrawingArea):
     opdia = deque(['dyn_bars','dyn_energy','dyn_differences','dyn_houses','dyn_signs'])
     def __init__(self,boss):
         self.boss = boss
         self.opts = boss.opts
-        gtk.DrawingArea.__init__(self)
-        self.set_events(gtk.gdk.BUTTON_PRESS_MASK | 
-                gtk.gdk.BUTTON_RELEASE_MASK | 
-                gtk.gdk.POINTER_MOTION_MASK | 
-                gtk.gdk.POINTER_MOTION_HINT_MASK)
-        self.connect("expose_event",self.dispatch)
+        Gtk.DrawingArea.__init__(self)
+        self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK | 
+                Gdk.EventMask.BUTTON_RELEASE_MASK | 
+                Gdk.EventMask.POINTER_MOTION_MASK | 
+                Gdk.EventMask.POINTER_MOTION_HINT_MASK)
+        self.connect("draw",self.dispatch)
         self.connect("button_press_event", self.on_diada_clicked)        
         self.connect("scroll-event", self.on_scroll)
         self.drawer = DiagramMixin(boss.opts.zodiac) 
 
-    def dispatch(self,da,event):
-        cr = self.window.cairo_create()
-        w = self.allocation.width
-        h = self.allocation.height
+    def dispatch(self,da,cr):
+        w = self.get_allocated_width()
+        h = self.get_allocated_height()
         cr.rectangle(0,0,w,h)
         cr.clip()
         cr.set_source_rgb(1.0,1.0,0.95)
@@ -47,7 +43,7 @@ class DrawDiagram(gtk.DrawingArea):
         return True
 
     def on_scroll(self,da,event):
-        if event.direction == gtk.gdk.SCROLL_UP:
+        if event.direction == Gdk.ScrollDirection.UP:
             self.opdia.rotate(1)
         else:
             self.opdia.rotate(-1)
@@ -55,14 +51,12 @@ class DrawDiagram(gtk.DrawingArea):
         return True
 
     def on_diada_clicked(self,hs,event):
-        if event.type == gtk.gdk._2BUTTON_PRESS and event.button == 1:
+        if event.type == Gdk.EventType._2BUTTON_PRESS and event.button == 1:
             boss.mpanel.toolbar.get_nth_item(5).set_active(False)
         return True
     
     def redraw(self): 
-        w = self.allocation.width
-        h = self.allocation.height
-        self.window.invalidate_rect(gtk.gdk.Rectangle(0,0,w,h),False)
+        self.queue_draw()
 
 #################################################
 crcol = ['card','fix','mut']
@@ -71,17 +65,17 @@ crosscols = [(0.7,0,0.2),(0.1,0.1,0.6),(0,0.6,0.1)]
 _h = -1
 prev_chart = None
 
-class HouseSelector(gtk.DrawingArea):
+class HouseSelector(Gtk.DrawingArea):
     def __init__(self,boss):
         global prev_chart
         self.boss = boss
         self.opts = boss.opts
-        gtk.DrawingArea.__init__(self)
-        self.set_events(gtk.gdk.BUTTON_PRESS_MASK | 
-                gtk.gdk.BUTTON_RELEASE_MASK | 
-                gtk.gdk.POINTER_MOTION_MASK | 
-                gtk.gdk.POINTER_MOTION_HINT_MASK)
-        self.connect("expose_event",self.dispatch)
+        Gtk.DrawingArea.__init__(self)
+        self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK | 
+                Gdk.EventMask.BUTTON_RELEASE_MASK | 
+                Gdk.EventMask.POINTER_MOTION_MASK | 
+                Gdk.EventMask.POINTER_MOTION_HINT_MASK)
+        self.connect("draw",self.dispatch)
         self.connect("button_press_event", self.on_hs_clicked)        
         self.connect("scroll-event", self.on_scroll)
         try:
@@ -94,30 +88,30 @@ class HouseSelector(gtk.DrawingArea):
         _bio, frac = curr.curr_chart.which_house_today(dt)
         _h = _bio
         self.queue_draw()
-        self.parent.parent.drawer.set_bio_from_date(_bio,frac)
+        # self.parent.parent.drawer.set_bio_from_date(_bio,frac)
+        self.get_parent().get_parent().drawer.set_bio_from_date(_bio,frac)
 
     def on_hs_clicked(self,hs,event):
         global _h
         if curr.curr_chart == curr.now:
             return True
         x, y = event.x,event.y
-        if event.type == gtk.gdk._2BUTTON_PRESS and event.button == 1:
-            self.parent.parent.panel.nowbut.emit('clicked')
+        if event.type == Gdk.EventType._2BUTTON_PRESS and event.button == 1:
+            self.get_parent().get_parent().panel.nowbut.emit('clicked')
             _h = -1
             self.queue_draw()
-        elif event.type == gtk.gdk.BUTTON_PRESS and event.button == 1:
-            w = hs.allocation.width/2; h = hs.allocation.height/2
+        elif event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
+            w = hs.get_allocated_width()/2; h = hs.get_allocated_height()/2
             deg = math.degrees(math.atan2(y-h,x-w))
             _h = int(math.ceil(5 - (deg/30)))
             self.queue_draw()
-            self.parent.parent.drawer.set_bio(_h,None)
+            self.get_parent().get_parent().drawer.set_bio(_h,None)
         return True
 
-    def dispatch(self,da,event):
+    def dispatch(self,da,cr):
         global _h,prev_chart
-        cr = self.window.cairo_create()
-        w = self.allocation.width
-        h = self.allocation.height
+        w = self.get_allocated_width()
+        h = self.get_allocated_height()
         cr.rectangle(0,0,w,h)
         cr.clip()
         cr.set_source_rgb(1.0,0.9,0.65)
@@ -173,24 +167,22 @@ class HouseSelector(gtk.DrawingArea):
         global _h
         if curr.curr_chart == curr.now:
             return True
-        if event.direction == gtk.gdk.SCROLL_UP:
+        if event.direction == Gdk.ScrollDirection.UP:
             _h = (_h - 1)%12
         else:
             _h = (_h + 1)%12
         self.queue_draw()
-        self.parent.parent.drawer.set_bio(_h,None)
+        self.get_parent().get_parent().drawer.set_bio(_h,None)
         return True
 
     def house_updown(self,amount):
         global _h
         _h = (_h + amount)%12
         self.queue_draw()
-        self.parent.parent.drawer.set_bio(_h,None)
+        self.get_parent().get_parent().drawer.set_bio(_h,None)
 
     def redraw(self): 
-        w = self.allocation.width
-        h = self.allocation.height
-        self.window.invalidate_rect(gtk.gdk.Rectangle(0,0,w,h),False)
+        self.queue_draw()
 
 ##################################################
 opcharts = ['draw_nat', 'draw_house',
@@ -203,7 +195,7 @@ opcoup = [ 'ascent_star','wundersensi_star','polar_star','crown_comp','paarwabe_
 tradtrans = {'draw_transits': _('Transitos'),'sec_prog': _('Progresion secundaria'), 'solar_rev':_('Revolucion solar')}
 initmenu = (_('Congelar'),_('Permutar'),_('Cartas'),'Clics',_('DDiagramas'),_('Biografias'),_('Parejas'),_('Transitos'))
 
-class DrawAux(gtk.DrawingArea):
+class DrawAux(Gtk.DrawingArea):
     pepending = [False,None,None]
 
     def __init__(self,boss,chart=None):
@@ -216,22 +208,22 @@ class DrawAux(gtk.DrawingArea):
         self.opcoup = deque(opcoup)
         self.optrans = deque(optrans)
         self.opaux = self.opcharts
-        gtk.DrawingArea.__init__(self)
-        self.set_events(gtk.gdk.BUTTON_PRESS_MASK | 
-                gtk.gdk.BUTTON_RELEASE_MASK | 
-                gtk.gdk.POINTER_MOTION_MASK | 
-                gtk.gdk.POINTER_MOTION_HINT_MASK)
-        self.connect("expose_event",self.dispatch)
+        Gtk.DrawingArea.__init__(self)
+        self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK | 
+                Gdk.EventMask.BUTTON_RELEASE_MASK | 
+                Gdk.EventMask.POINTER_MOTION_MASK | 
+                Gdk.EventMask.POINTER_MOTION_HINT_MASK)
+        self.connect("draw",self.dispatch)
         self.connect("button_press_event", self.on_da_clicked)
         self.connect("scroll-event", self.on_scroll)
         self.drawer = DrawMixin(boss.opts,self) 
-        self.menu = gtk.Menu()
+        self.menu = Gtk.Menu()
         for buf in initmenu:
-            menu_item = gtk.MenuItem(buf)
+            menu_item = Gtk.MenuItem(label=buf)
             self.menu.append(menu_item)
             menu_item.connect("activate", self.on_menuitem_activate)
             menu_item.show()
-        sep_item = gtk.SeparatorMenuItem()
+        sep_item = Gtk.SeparatorMenuItem()
         self.menu.insert(sep_item,2)
         sep_item.show()
         if chart:
@@ -243,10 +235,9 @@ class DrawAux(gtk.DrawingArea):
         self.permuted = False
         
 
-    def dispatch(self,da,event):
-        cr = self.window.cairo_create()
-        w = self.allocation.width
-        h = self.allocation.height
+    def dispatch(self,da,cr):
+        w = self.get_allocated_width()
+        h = self.get_allocated_height()
         cr.rectangle(0,0,w,h)
         cr.clip()
         cr.set_source_rgb(1.0,1.0,1.0)
@@ -269,7 +260,7 @@ class DrawAux(gtk.DrawingArea):
         return False
         
     def on_scroll(self,da,event):
-        if event.direction == gtk.gdk.SCROLL_UP:
+        if event.direction == Gdk.ScrollDirection.UP:
             self.opaux.rotate(1)
         else:
             self.opaux.rotate(-1)
@@ -277,20 +268,18 @@ class DrawAux(gtk.DrawingArea):
         return True
 
     def redraw(self): 
-        w = self.allocation.width
-        h = self.allocation.height
-        self.window.invalidate_rect(gtk.gdk.Rectangle(0,0,w,h),False)
+        self.queue_draw()
 
     def popup_menu(self):
-        event = gtk.gdk.Event(gtk.gdk.BUTTON_PRESS)
-        self.menu.popup(None, None, None, 1, event.time)
+        #event = Gdk.Event.new(Gdk.EventType.BUTTON_PRESS)
+        self.menu.popup(None, None, None, None, 1, 0)
 
     def on_da_clicked(self,da,event):
         x, y = event.x,event.y
-        if event.type == gtk.gdk.BUTTON_PRESS and event.button == 3:
-            self.menu.popup(None, None, None, event.button, event.time)
+        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
+            self.menu.popup(None, None, None, None, event.button, event.time)
             return True
-        if event.type == gtk.gdk._2BUTTON_PRESS and event.button == 1:
+        if event.type == Gdk.EventType._2BUTTON_PRESS and event.button == 1:
             if self.opaux == self.opbio:
                 return False
             if self.opaux == self.opcharts:
@@ -304,12 +293,12 @@ class DrawAux(gtk.DrawingArea):
             self.opaux.rotate(-rad)
             self.redraw()
             return True
-        elif event.type == gtk.gdk.BUTTON_PRESS and event.button == 1:
+        elif event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
             if self.opaux == self.opbio:
                 return False
             if not self.drawer.get_showAP() or self.opaux != self.opcharts :
                 return True 
-            w = da.allocation.width/2; h = da.allocation.height/2
+            w = da.get_allocated_width()/2; h = da.get_allocated_height()/2
             deg = math.degrees(math.atan2(y-h,x-w))
             for_ch = ['chart','click'][self.permuted]
             self.drawer.set_AP(deg,self.opaux[0],for_ch)
@@ -322,32 +311,32 @@ class DrawAux(gtk.DrawingArea):
             return True
 
     def on_menuitem_activate(self,menuitem): 
-        if menuitem.child.get_text() == _('Descongelar'):
+        if menuitem.get_child().get_text() == _('Descongelar'):
             self.frozen = False
-            menuitem.child.set_text(_('Congelar'))
-        elif menuitem.child.get_text() == _('Congelar'):
+            menuitem.get_child().set_text(_('Congelar'))
+        elif menuitem.get_child().get_text() == _('Congelar'):
             self.frozen = True
-            menuitem.child.set_text(_('Descongelar')) 
-        elif menuitem.child.get_text() == _('Permutar'):
+            menuitem.get_child().set_text(_('Descongelar')) 
+        elif menuitem.get_child().get_text() == _('Permutar'):
             self.cache[0],self.cache[1] = self.cache[1],self.cache[0]
             self.permuted = not self.permuted
-        elif menuitem.child.get_text() == 'Clics':
+        elif menuitem.get_child().get_text() == 'Clics':
             self.opaux = self.opclicks
-        elif menuitem.child.get_text() == _('DDiagramas'):
+        elif menuitem.get_child().get_text() == _('DDiagramas'):
             self.opaux = self.opdia
-        elif menuitem.child.get_text() == _('Cartas'):
+        elif menuitem.get_child().get_text() == _('Cartas'):
             self.opaux = self.opcharts
-        elif menuitem.child.get_text() == _('Transitos'):
+        elif menuitem.get_child().get_text() == _('Transitos'):
             self.opaux = self.optrans
-        elif menuitem.child.get_text() == _('Parejas'):
+        elif menuitem.get_child().get_text() == _('Parejas'):
             self.opaux = self.opcoup
-        elif menuitem.child.get_text() == _('Biografias'):
+        elif menuitem.get_child().get_text() == _('Biografias'):
             self.opaux = self.opbio
         self.redraw()
         return True
 
     def draw_label(self,cr,w,h): 
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         font = pango.FontDescription(self.opts.font)
         font.set_size(9*pango.SCALE)
         layout.set_font_description(font)
@@ -388,7 +377,7 @@ class DrawAux(gtk.DrawingArea):
         strdate = curr.charts['now'].date
         date,time = parsestrtime(strdate)
         date = date + " " + time.split(" ")[0]
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         cr.set_source_rgb(0,0,0.6)
         font = pango.FontDescription(self.opts.font)
         font.set_size(8*pango.SCALE)
@@ -416,7 +405,7 @@ class DrawAux(gtk.DrawingArea):
         h = -([1,0][iambio]*h/2)+5
         w = ([1,2][iambio]*w/2)-5
 
-        layout = cr.create_layout()
+        layout = pangocairo.create_layout(cr)
         cr.set_source_rgb(*col)
         font = pango.FontDescription("Astro-Nex")
         font.set_size(9*pango.SCALE)

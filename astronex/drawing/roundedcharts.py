@@ -242,7 +242,8 @@ class Basic_Chart(object):
         pl = []
         for i,p in enumerate(self.get_planets()):
             pl.append( { 'degree': p, 'ix': i} )
-        return sorted(pl)
+
+        return sorted(pl, key=lambda x: x['degree'])
 
     def get_zod_iter(self):
         '''Iterate over signs.'''
