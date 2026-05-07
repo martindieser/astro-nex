@@ -198,8 +198,8 @@ mouse_texts = [
         ("",_('ventana de grados'),_('principio lista principal')),
         ("",_('alternar posicion'),_('listas dobles/triples')),
         ("",_('alternar con guia'),_('acercar')),
-        ("",_('mover pe ')+ u"180\u00b0",_('pe')),
-        (_('   + Ctlr'),_('mover pe +')+u"30\u00b0",""),
-        (_('   + Ctlr-May'),_('mover pe -')+u"30\u00b0","")
+        ("",_('mover pe ')+ "180\u00b0",_('pe')),
+        (_('   + Ctlr'),_('mover pe +')+"30\u00b0",""),
+        (_('   + Ctlr-May'),_('mover pe -')+"30\u00b0","")
         ]
 

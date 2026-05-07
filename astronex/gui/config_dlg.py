@@ -3,10 +3,10 @@ import os
 import gtk,pango
 from configobj import ConfigObj
 from .. extensions.path import path
-from localwidget import LocWidget 
-from itertools import izip,count
+from .localwidget import LocWidget 
+from itertools importcount
 from configobj import ConfigObj
-from searchview import SearchView
+from .searchview import SearchView
 
 from .. boss import boss
 curr = boss.get_state()

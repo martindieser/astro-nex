@@ -1,7 +1,7 @@
-from extensions.path import path
+from .extensions.path import path
 from collections import deque
-from itertools import izip
-import config
+
+from . import config
 import cairo
 
 zodlet = ( 'q','w','e','r','t','y','u','i','o','p','a','s' )
@@ -143,7 +143,7 @@ class Zodiac(object):
 
     def set_plancolors(self):
         cols = config.parse_plan_colors()
-        for p,t in izip(self.plan,plantuples):
+        for p,t in zip(self.plan,plantuples):
             p.col = cols[t[2]]
 
     def set_allcolors(self):
@@ -169,10 +169,10 @@ def test():
     config.read_config(path("/home/jose/.astronex"))
     zod = Zodiac(context)
     for z in zod.zod:
-        print z.__dict__
-    print
+        print(z.__dict__)
+    print()
     for z in zod.plan:
-        print z.__dict__
+        print(z.__dict__)
 
 if __name__ == "__main__":
     test()

@@ -166,7 +166,7 @@ def planets(jd,epheflag,p=12):
             continue
         s,l,e = calc(jd,i,epheflag)
         if s < 0:
-            print("error: %s" % e)
+            print(("error: %s" % e))
             return None
         pl.append(l)
     return pl

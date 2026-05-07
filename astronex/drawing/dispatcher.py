@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 import gtk,cairo
 import math
-from coredraw import CoreMixin
-from progsheet import ProgMixin
-from profchart import ProfileMixin
-from biograph import BioMixin
-from diagrams import DiagramMixin
-from datasheets import SheetMixin
-from paarwabe import PaarWabeMixin
-from planetogram import PlanetogramMixin
-import roundedcharts
-from aspects import AspectManager
-from roundedcharts import *
+from .coredraw import CoreMixin
+from .progsheet import ProgMixin
+from .profchart import ProfileMixin
+from .biograph import BioMixin
+from .diagrams import DiagramMixin
+from .datasheets import SheetMixin
+from .paarwabe import PaarWabeMixin
+from .planetogram import PlanetogramMixin
+from . import roundedcharts
+from .aspects import AspectManager
+from .roundedcharts import *
 from datetime import datetime, date, time
 from .. boss import boss
 curr = boss.get_state()

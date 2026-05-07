@@ -6,17 +6,17 @@ from .. surfaces.layoutsurface import DrawMaster
 from .. surfaces.pngsurface import DrawPng
 from .. surfaces.pdfsurface import DrawPdf
 #from .. surfaces import printsurface
-from mainnb import MainPanel
-from config_dlg import ConfigDlg
-from customloc_dlg import CustomLocDlg
-from chartbrowser import ChartBrowserWindow
-from plagram_dlg import PlagramWindow
-from entry_dlg import EntryDlg
-from localsel import LocSelector
-from aux_dlg import AuxWindow
+from .mainnb import MainPanel
+from .config_dlg import ConfigDlg
+from .customloc_dlg import CustomLocDlg
+from .chartbrowser import ChartBrowserWindow
+from .plagram_dlg import PlagramWindow
+from .entry_dlg import EntryDlg
+from .localsel import LocSelector
+from .aux_dlg import AuxWindow
 #from shell_dlg import ShellDialog
-from quickhelp import HelpWindow
-from inieditor import IniEditor
+from .quickhelp import HelpWindow
+from .inieditor import IniEditor
 
 class WinNex(gtk.Window):
 
@@ -271,12 +271,12 @@ class WinNex(gtk.Window):
         #about.connect("delete_event", self.on_about_close)
         about.set_name("Astro-Nex")
         about.set_version(self.boss.app.version)
-        about.set_comments(unicode(_("Programa de calculo y dibujo de cartas astrologicas segun el metodo API"), "utf-8"))
+        about.set_comments(str(_("Programa de calculo y dibujo de cartas astrologicas segun el metodo API"), "utf-8"))
         file = path.joinpath(appath,"resources/COPYING")
         about.set_license(open(file).read())
-        about.set_copyright(unicode("Copyright © 2006","utf-8"))
+        about.set_copyright(str("Copyright © 2006","utf-8"))
         about.set_website("http://astro-nex.com")
-        about.set_authors([unicode("Jose Antonio Rodríguez <jar@eideia.net>","utf-8")])
+        about.set_authors([str("Jose Antonio Rodríguez <jar@eideia.net>","utf-8")])
         imgfile = path.joinpath(appath,"resources/splash.png")
         logo = gtk.gdk.pixbuf_new_from_file(imgfile)
         about.set_logo(logo)

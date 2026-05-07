@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import  database
-from chart import Chart
+from . import  database
+from .chart import Chart
 
 def process_zodiac_data():
     data = database.get_datum("personal", "h1")
@@ -10,7 +10,7 @@ def process_zodiac_data():
         z = int(d/30)
         zod[z] +=1
 
-    print zod
+    print(zod)
 
 def retrieve_charts():
     chart = Chart()
@@ -31,10 +31,10 @@ def main_survey():
         sats[int(ch.planets[6]/30)] += 1
         ascs[int(ch.houses[0]/30)] += 1
 
-    print suns
-    print moons
-    print sats
-    print ascs
+    print(suns)
+    print(moons)
+    print(sats)
+    print(ascs)
 
     
 

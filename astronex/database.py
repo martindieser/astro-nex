@@ -2,9 +2,9 @@
 '''Database services'''
 import sqlite3
 from copy import copy
-from extensions.path import path
-from utils import dectodeg,degtodec
-import locale
+from .extensions.path import path
+from .utils import dectodeg,degtodec
+from . import locale
 locale.setlocale(locale.LC_ALL,'')
 local_conn = None
 chart_conn = None
@@ -61,7 +61,7 @@ def westerncollate(s1, s2):
 
 
 def save_attached_loc(args):
-    country, regcode, city, lat, long, usa = args
+    country, regcode, city, lat, int, usa = args
     if not usa:
         table =  "cust_" + country.lower()
         schema = world_schema
@@ -78,7 +78,7 @@ def save_attached_loc(args):
     if table not in att_tables:
         local_conn.execute(schema % table)
 
-    bindings = (country,regcode,city,lat,long)
+    bindings = (country,regcode,city,lat,int)
     local_conn.execute(insert % (table), bindings)
     local_conn.commit()
 
@@ -262,7 +262,7 @@ def fetch_blindly(country, city, loc):
     sql = "select CC, AC, Ciudad, Latitud, Longitud from '%s' where Ciudad=='%s'" % (country, city)
     cursor.execute(sql)
     try:
-        loc.country_code, loc.region_code, loc.city, loc.latitud, loc.longitud = cursor.next()
+        loc.country_code, loc.region_code, loc.city, loc.latitud, loc.longitud = next(cursor)
     except StopIteration:
         return "localidad no encontrada: %s" % city
 
@@ -280,14 +280,14 @@ def fetch_blindly_usacity(country, city, loc):
     sql = "select CC, AC, Ciudad, Latitud, Longitud from US%s where Ciudad == '%s'" % (country, city)
     cursor.execute(sql)
     try:
-        loc.country, loc.region_code, loc.city, loc.latdec, loc.longdec = cursor.next()
+        loc.country, loc.region_code, loc.city, loc.latdec, loc.longdec = next(cursor)
     except StopIteration:
         return "localidad no encontrada: %s" % city
     loc.latitud = dectodeg(float(loc.latdec))
     loc.longitud = dectodeg(float(loc.longdec))
     sql = "select state, name from usaadmin where alfa == '%s' and code == '%s'" % (loc.country, loc.region_code)
     cursor.execute(sql)
-    loc.country_code, loc.region = cursor.next()
+    loc.country_code, loc.region = next(cursor)
 
     sql = "select name from usastates where alfa == '%s'" % loc.country
     cursor.execute(sql)
@@ -358,7 +358,7 @@ def get_usa_state_code(name):
     cursor = local_conn.cursor()
     sql = "select alfa, code from usastates where name='%s'" % name
     cursor.execute(sql)
-    return cursor.next()
+    return next(cursor)
 
 def fetch_worldcity(country, city, code, loc):
     cursor = local_conn.cursor()
@@ -381,7 +381,7 @@ def fetch_worldcity(country, city, code, loc):
     sql += union
 
     cursor.execute(sql)
-    loc.country_code, loc.region_code, loc.city, loc.latitud, loc.longitud = cursor.next()
+    loc.country_code, loc.region_code, loc.city, loc.latitud, loc.longitud = next(cursor)
 
     loc.latdec = degtodec(loc.latitud.strip())
     loc.longdec = degtodec(loc.longitud.strip())
@@ -446,14 +446,14 @@ def fetch_usacity(country, city, code, loc):
 
     sql += union
     cursor.execute(sql)
-    loc.country, loc.region_code, loc.city, loc.latdec, loc.longdec = cursor.next()
+    loc.country, loc.region_code, loc.city, loc.latdec, loc.longdec = next(cursor)
 
     loc.latitud = dectodeg(float(loc.latdec))
     loc.longitud = dectodeg(float(loc.longdec))
 
     sql = "select state, name from usaadmin where alfa == '%s' and code == '%s'" % (loc.country, loc.region_code)
     cursor.execute(sql)
-    loc.country_code, loc.region = cursor.next()
+    loc.country_code, loc.region = next(cursor)
 
     sql = "select name from usastates where alfa == '%s'" % loc.country
     cursor.execute(sql)
@@ -574,13 +574,13 @@ def delete_chart_from_name(tbl, fi, la):
 def load_chart(tbl, id, chart):
     cursor = chart_conn.cursor()
     sql = "select * from %s where rowid='%s'" % (tbl, id)
-    ch = cursor.execute(sql).next()
+    ch = next(cursor.execute(sql))
     setchart(chart, ch)
 
 def retrieve_chart(tbl, id, chart):
     cursor = chart_conn.cursor()
     sql = "select * from %s where rowid='%s'" % (tbl, id)
-    ch = cursor.execute(sql).next()
+    ch = next(cursor.execute(sql))
     return ch
 
 def retrieve_all_charts(tbl,chart):
@@ -596,7 +596,7 @@ def retrieve_all_charts(tbl,chart):
 def load_chart_from_name(tbl, fi, la, chart):
     cursor = chart_conn.cursor()
     sql = "select * from %s where first='%s' and last='%s'" % (tbl, fi, la)
-    ch = cursor.execute(sql).next()
+    ch = next(cursor.execute(sql))
     setchart(chart, ch)
 
 def setchart(chart, ch):

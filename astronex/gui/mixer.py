@@ -3,7 +3,7 @@ import gtk
 import sys,os,re
 import pickle 
 from .. extensions.path import path
-from searchview import SearchView
+from .searchview import SearchView
 
 curr = None
 boss = None
@@ -232,7 +232,7 @@ class MixerPanel(gtk.HBox):
         selection.set(selection.target, 8, data)
 
     def drag_data_received_data(self,treeview,context,x,y,selection,info,etime):
-        for key in self.views.keys():
+        for key in list(self.views.keys()):
             if key == treeview:
                 mytab = self.views[key].get_active_text()
             else:
@@ -262,7 +262,7 @@ class MixerPanel(gtk.HBox):
         else:
             model.append(data)
 
-        for key in self.views.keys():
+        for key in list(self.views.keys()):
             if key == treeview:
                 mytab = self.views[key].get_active_text()
             else:
@@ -432,7 +432,7 @@ class MixerPanel(gtk.HBox):
             if r[0] == new:
                 index = i
                 break 
-        for key in self.views.keys():
+        for key in list(self.views.keys()):
             table = self.views[key]
             table.set_model(liststore)
         table.set_active(index)

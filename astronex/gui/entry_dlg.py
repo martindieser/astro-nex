@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import gtk
 from pytz import timezone
-from datewidget import DateEntry
-from localwidget import LocWidget
+from .datewidget import DateEntry
+from .localwidget import LocWidget
 from datetime import datetime, time
 from .. utils import parsestrtime
 from .. extensions.path import path
-from mainnb import Slot
+from .mainnb import Slot
 from copy import copy
 curr = None
 
@@ -29,9 +29,9 @@ class PersonTable(gtk.Table):
 
     def on_changed(self,w,curr):
         if w is self.first:      
-            curr.person.first = unicode(w.get_text(),"utf-8")           
+            curr.person.first = str(w.get_text(),"utf-8")           
         elif w is self.last:
-            curr.person.last =  unicode(w.get_text(),"utf-8")
+            curr.person.last =  str(w.get_text(),"utf-8")
 
 class EntryDlg(gtk.Dialog):
     '''New chart inputs dialog'''
@@ -182,8 +182,8 @@ class EntryDlg(gtk.Dialog):
             table.last.set_text(chart.last)
             date,thistime = parsestrtime(chart.date)
             thistime = thistime.split(' ')[0]
-            self.dw.set_date(datetime(*reversed(map(int,date.split('/')))))
-            self.dw.set_time(time(*map(int,thistime.split(':'))))
+            self.dw.set_date(datetime(*reversed(list(map(int,date.split('/'))))))
+            self.dw.set_time(time(*list(map(int,thistime.split(':')))))
         
         loc = self.loc 
         if chart.country == 'USA':

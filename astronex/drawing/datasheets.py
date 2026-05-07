@@ -50,7 +50,7 @@ def get_personal_info():
     datestr = " ".join([wday, date,  time]) 
     lat = curr.curr_chart.latitud
     long = curr.curr_chart.longitud
-    geodat = format_longitud(long) + " " + format_latitud(lat)
+    geodat = format_longitud(int) + " " + format_latitud(lat)
     name = curr.curr_chart.first + " " + curr.curr_chart.last
     loc = curr.curr_chart.city + " (" + t(curr.curr_chart.country) + ")"
     return name,datestr,loc,geodat
@@ -516,7 +516,7 @@ class SheetMixin(object):
             m = int(60*(deg-d))
             d = str(d).rjust(2,'0')
             m = str(m).rjust(2,'0')
-            res = u"%s\u00b0 %s\u00b4\t%s" % (d,m,h[house%12])
+            res = "%s\u00b0 %s\u00b4\t%s" % (d,m,h[house%12])
             cr.move_to(74,105+i*16)
             layout.set_text(res)
             cr.layout_path(layout)
@@ -565,7 +565,7 @@ class SheetMixin(object):
             m = str(pl[i][1]).rjust(2,'0')
             h = hh[pl[i][2]]
             z = pl[i][3]
-            res = u"%s\u00b0 %s\u00b4\t%s\t%s" % (l,m,h,z) 
+            res = "%s\u00b0 %s\u00b4\t%s\t%s" % (l,m,h,z) 
             cr.move_to(70,105+i*16)
             layout.set_text(res)
             cr.layout_path(layout)
@@ -693,7 +693,7 @@ class SheetMixin(object):
             layout.set_font_description(font)
             cr.set_source_rgb(0,0.5,0.3) 
             region = curr.loc.region
-            if boss.opts.lang == 'ca' and curr.loc.country == u'España':
+            if boss.opts.lang == 'ca' and curr.loc.country == 'España':
                 region = cata_reg[region]
             layout.set_text(curr.loc.city+' ('+region+'-'+t(curr.loc.country)[0]+')')
             ink,logical = layout.get_extents()

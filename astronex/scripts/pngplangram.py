@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from scripts import Script
+from .scripts import Script
        
 class PngPlangram(Script):
     def run(self,*arg,**kw):

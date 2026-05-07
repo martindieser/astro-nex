@@ -59,7 +59,7 @@ def parsestrtime(strdate):
         
 
 def format_longitud(long):
-    longitud = dectodeg(long)[:-2]
+    longitud = dectodeg(int)[:-2]
     if longitud[0] == '-':
         let = 'W'
         longitud = longitud[1:]
@@ -87,7 +87,7 @@ def strdate_to_date(strdate):
     try:
         y,mo,d = [ int(x) for x in date.split('-')]
     except ValueError:
-        print date
+        print(date)
     zone, time  = time[8:], time[:5]
     try:
         zone.index(':')

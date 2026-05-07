@@ -3,7 +3,7 @@ import cairo, pango
 import math
 from math import pi as PI
 from .. boss import boss
-from roundedcharts import HouseChart
+from .roundedcharts import HouseChart
 curr = boss.get_state()
 
 aspcol = None

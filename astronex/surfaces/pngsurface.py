@@ -196,7 +196,7 @@ class DrawPng(object):
         
         s = surface
         d = s.get_data()
-        for i in xrange(0,len(d),4):
+        for i in range(0,len(d),4):
             d[i],d[i+2] = d[i+2],d[i]
         
         im = PIL.Image.frombuffer("RGBA", (s.get_width(),s.get_height()),d,"raw","RGBA",0,1)

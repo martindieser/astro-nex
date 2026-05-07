@@ -2,7 +2,7 @@
 import gtk
 import sys,os,re
 import pickle 
-from datewidget import DateEntry, set_background
+from .datewidget import DateEntry, set_background
 from pytz import timezone
 from datetime import datetime
 from .. extensions.validation import MaskEntry,ValidationError
@@ -185,7 +185,7 @@ class CouplesPanel(gtk.HBox):
         return vbox
     
     def on_person_match(self,compl,model,iter,personae):
-        sel = unicode(model.get_value(iter,0),"utf-8")
+        sel = str(model.get_value(iter,0),"utf-8")
         for r in personae.get_model():
             if r[0] == sel:
                 personae.set_active_iter(r.iter)
@@ -333,7 +333,7 @@ class CoupleDates(DateEntry):
         try:
             self.date = self.get_date()
             set_background(entry, "#ffffff") 
-        except ValidationError, e:
+        except ValidationError as e:
             self.date = None
             set_background(entry, "#ff699a")
         if self.date is None: 

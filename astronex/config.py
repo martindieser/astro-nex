@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from extensions.path import path
+from .extensions.path import path
 import gtk
 from configobj import ConfigObj
 
@@ -42,9 +42,9 @@ class NexConf(object):
             'FONT': FONT, 'PNG': PNG, 'LANG': LANG , 'PDF': PDF}
 
     def __init__(self):
-        for sec  in self.sections.values():
+        for sec  in list(self.sections.values()):
             self.__dict__.update(sec)
-        import locale
+        from . import locale
         lang = locale.getdefaultlocale()[0]
         if lang:
             lang = lang.split('_')[0]
@@ -55,9 +55,9 @@ class NexConf(object):
         self.lang = lang
 
     def opts_to_config(self,config):
-        for sec,val in self.sections.iteritems():
+        for sec,val in self.sections.items():
             config[sec] = {}
-            for s in val.keys():
+            for s in list(val.keys()):
                 config[sec][s] = getattr(self,s)
 
 cfgcols = {}
@@ -67,16 +67,16 @@ def read_config(homedir):
     cfgfile = path.joinpath(homedir,'cfg.ini')
     conf = ConfigObj(cfgfile)
     popts = {}
-    for k in conf.keys():
+    for k in list(conf.keys()):
         popts.update(conf[k])
 
-    if popts.has_key('transits') and not isinstance(popts['transits'],list):
+    if 'transits' in popts and not isinstance(popts['transits'],list):
         del popts['transits']
 
     opts = NexConf()
     opts.__dict__.update(popts)
 
-    for keyc in default_colors.keys():
+    for keyc in list(default_colors.keys()):
         val = getattr(opts,keyc)
         cfgcols[keyc] = ''.join(['#',val])
 
@@ -105,22 +105,22 @@ def reload_config(conf,boss):
             pass
     
     popts = {}
-    for k in conf.keys():
+    for k in list(conf.keys()):
         popts.update(conf[k])
     opts.__dict__.update(popts)
 
-    for keyc in default_colors.keys():
+    for keyc in list(default_colors.keys()):
         val = getattr(opts,keyc)
         cfgcols[keyc] = ''.join(['#',val])
 
-    from chart import orbs as ch_orbs
+    from .chart import orbs as ch_orbs
     orbs = [opts.lum,opts.normal,opts.short,opts.far,opts.useless]
     for l in orbs:
-        state.orbs.append(map(float,l))
-        ch_orbs.append(map(float,l)) 
+        state.orbs.append(list(map(float,l)))
+        ch_orbs.append(list(map(float,l))) 
     peorbs = [opts.pelum,opts.penormal,opts.peshort,opts.pefar,opts.peuseless]
     for l in peorbs:
-        state.peorbs.append(map(float,l))
+        state.peorbs.append(list(map(float,l)))
     for l in opts.transits:
         state.transits.append(float(l)) 
     opts.discard = [ int(x) for x in opts.discard ]
@@ -155,6 +155,6 @@ def parse_asp_colors():
 
 def reset_colors(opts):
     global cfgcols
-    for keyc,val in default_colors.iteritems():
+    for keyc,val in default_colors.items():
         setattr(opts,keyc,val)
         cfgcols[keyc] = ''.join(['#',val])

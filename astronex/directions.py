@@ -3,7 +3,7 @@ import math
 from datetime import datetime, timedelta, date, time
 from pytz import timezone
 import pysw
-from utils import parsestrtime
+from .utils import parsestrtime
 
 def solar_rev(boss):
     date, time = parsestrtime(boss.state.curr_chart.date)
@@ -100,7 +100,7 @@ def strdate_to_date(strdate):
     try:
         y,mo,d = [ int(x) for x in date.split('-')]
     except ValueError:
-        print date
+        print(date)
     zone, time  = time[8:], time[:5]
     try:
         zone.index(':')

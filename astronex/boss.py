@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-from gui.mainnb import MainPanel
-from zodiac import Zodiac
-from drawing.roundedcharts import *
-from drawing.aspects import SimpleAspectManager
-import database
-import config
-import chart
-from gui.mainnb import Slot
+from .gui.mainnb import MainPanel
+from .zodiac import Zodiac
+from .drawing.roundedcharts import *
+from .drawing.aspects import SimpleAspectManager
+from . import database
+from . import config
+from . import chart
+from .gui.mainnb import Slot
 boss = None
 import pickle
-from directions import solar_rev, sec_prog
+from .directions import solar_rev, sec_prog
 
 suffixes = { 'draw_nat':'rx','draw_nod':'nd','draw_house':'hs','draw_local':'lc',
         'draw_soul':'ca','draw_prof':'pf','draw_int':'in','draw_single':'sn','draw_radsoul':'rsi','draw_dharma':'dh',
@@ -107,12 +107,12 @@ class Manager(object):
 
     ##### pdf
     def set_pdf(self,paper,labels=False):
-        from surfaces import pdfsurface as surf
+        from .surfaces import pdfsurface as surf
         surf.PDFW, surf.PDFH = surf.papers[paper]
         surf.pdflabels = labels
 
     def set_pdf_custom(self,w,h):
-        from surfaces import pdfsurface as surf
+        from .surfaces import pdfsurface as surf
         surf.papers['custom'] = (w,h)
 
     ##### scripts loading
@@ -192,12 +192,12 @@ class Manager(object):
         aspects.difference_update(conj)
         noopos = set(a for a in aspects if a.a != 6)
         aspects.difference_update(noopos)
-        print 'conj'
+        print('conj')
         for a in conj:
-            print a.p1, a.p2
-        print 'opos'
+            print(a.p1, a.p2)
+        print('opos')
         for a in aspects:
-            print a.p1, a.p2
+            print(a.p1, a.p2)
 
 
     def load_one_fav(self):

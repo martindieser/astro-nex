@@ -7,9 +7,9 @@ import gtk
 import pango
 import gobject
 from .. utils import parsestrtime,format_longitud,format_latitud
-import import_dlg
-from oppanel import OpPanel
-from searchview import SearchView
+from . import import_dlg
+from .oppanel import OpPanel
+from .searchview import SearchView
 curr = None
 boss = None
 
@@ -726,7 +726,7 @@ class MainPanel(gtk.VBox):
         date,time = parsestrtime(strdate)
         slot.loclbl.set_text(chart.city)
         region = chart.region
-        if boss.opts.lang == 'ca' and chart.country == u'España':
+        if boss.opts.lang == 'ca' and chart.country == 'España':
             region = cata_reg[region]
         slot.reglbl.set_text(t(chart.country)+' ('+region+')')
         geo = format_longitud(chart.longitud) + ' '+ format_latitud(chart.latitud)

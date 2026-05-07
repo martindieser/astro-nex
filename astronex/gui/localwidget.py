@@ -2,7 +2,7 @@
 import gtk
 from .. countries import cata_reg
 from .. boss import boss
-from searchview import SearchView
+from .searchview import SearchView
 curr = boss.get_state()
 
 def filter_region(model,iter,code):
@@ -85,7 +85,7 @@ class LocWidget(gtk.VBox):
         self.reg_combo.pack_start(cell)
         self.reg_combo.connect('changed',self.on_reg_selected)
         rlist = curr.datab.list_regions(country_code,curr.usa)
-        if country_code == u"SP" and boss.opts.lang == 'ca':
+        if country_code == "SP" and boss.opts.lang == 'ca':
             temp = []
             for r in rlist:
                 temp.append((cata_reg[r[0]],r[1]))
@@ -153,7 +153,7 @@ class LocWidget(gtk.VBox):
         iter = combo.get_active_iter()
         if not iter: return
         model = combo.get_model()
-        code = unicode(model.get_value(iter,1),"utf-8")
+        code = str(model.get_value(iter,1),"utf-8")
         liststore = gtk.ListStore(str,str)
         rlist = curr.datab.list_regions(code,curr.usa)
         for r in rlist:
@@ -172,7 +172,7 @@ class LocWidget(gtk.VBox):
         curr.country = code 
 
     def on_count_match(self,compl,model,iter):
-        sel = unicode(model.get_value(iter,0),"utf-8")
+        sel = str(model.get_value(iter,0),"utf-8")
         for r in self.country_combo.get_model():
             if r[0] == sel:
                 self.country_combo.set_active_iter(r.iter)

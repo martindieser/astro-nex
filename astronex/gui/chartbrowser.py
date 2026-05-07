@@ -5,13 +5,13 @@ from copy import copy
 from .. drawing.coredraw import CoreMixin
 from .. drawing.dispatcher import DrawMixin, AspectManager
 from .. drawing.roundedcharts import RadixChart 
-from mainnb import Slot
+from .mainnb import Slot
 from .. utils import parsestrtime
-from mixer import MixerPanel
-from import_dlg import ImportPanel
-from couples import CouplesPanel
+from .mixer import MixerPanel
+from .import_dlg import ImportPanel
+from .couples import CouplesPanel
 from .. extensions.path import path
-from searchview import SearchView
+from .searchview import SearchView
 
 boss = None
 curr = None

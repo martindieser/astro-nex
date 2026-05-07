@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from itertools import izip
+
 from collections import deque
 from math import sqrt,cos,sin,pi
 PHI = 1 / ((1+sqrt(5))/2)
@@ -224,14 +224,14 @@ class Basic_Chart(object):
 
         plans = self.sortplan()
         planque = deque(plans)
-        boolque = deque([diftuple(t) for t in izip(plans,plans[1:]+[plans[0]])])
+        boolque = deque([diftuple(t) for t in zip(plans,plans[1:]+[plans[0]])])
         if True in boolque:
             while boolque[0] != True or boolque[-1] != False:
                 boolque.rotate(-1)
                 planque.rotate(-1)
 
         jail = []; cell = set()
-        for low,btuple in izip(planque,boolque):
+        for low,btuple in zip(planque,boolque):
             cell.add((low['degree'],low['ix']))
             if btuple is False:
                 jail.append(cell)
@@ -364,7 +364,7 @@ class UnequalHousesChart(object):
 
     def get_golden_points(self):
         '''Iterator over low/inv proportions.'''
-        for house,size in izip(self.get_houses(),self.get_sizes()):
+        for house,size in zip(self.get_houses(),self.get_sizes()):
             yield house,size*PHI, size*(1-PHI)
 
 class EqualHousesChart(object):
@@ -386,7 +386,7 @@ class EqualHousesChart(object):
 
     def get_golden_points(self):
         '''Iterator over low/inv proportions.'''
-        for house,size in izip(self.get_houses(),self.get_sizes()):
+        for house,size in zip(self.get_houses(),self.get_sizes()):
             yield house,size*PHI, size*(1-PHI)
 
 class RadixChart(Basic_Chart,UnequalHousesChart):
@@ -508,12 +508,12 @@ class HouseChart(Basic_Chart,EqualHousesChart):
         return 180.0 - degree
 
     def get_sign_offsets(self):
-        for long,size in izip(reversed(self.get_sign_cusps()),reversed(self.chart.sign_sizes())):
-            off = 180 - long
+        for int,size in zip(reversed(self.get_sign_cusps()),reversed(self.chart.sign_sizes())):
+            off = 180 - int
             yield (off + (90 - size/2))
 
     def get_sclx(self,scly):
-        return scly * self.iter_sizes.next()/30
+        return scly * next(self.iter_sizes)/30
 
     def set_iter_sizes(self):
         self.iter_sizes = (size for size in reversed(self.chart.sign_sizes()))
@@ -632,12 +632,12 @@ class SubjectClickChart(RadixChart):
         return [h - asc for h in invert]
 
     def subject_sign_offsets(self):
-        for long,size in izip(reversed(self.get_sign_cusps()),reversed(self.subject_sizes())):
-            off = 180 - long
+        for int,size in zip(reversed(self.get_sign_cusps()),reversed(self.subject_sizes())):
+            off = 180 - int
             yield (off + (90 - size/2))
 
     def subject_sclx(self,scly):
-        return scly * self.iter_sizes.next()/30
+        return scly * next(self.iter_sizes)/30
 
     def set_iter_sizes(self):
         self.iter_sizes = (size for size in reversed(self.subject_sizes()))

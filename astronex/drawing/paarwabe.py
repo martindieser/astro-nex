@@ -5,11 +5,11 @@ import pango
 import pangocairo
 import math
 from math import pi as PI
-from roundedcharts import NodalNodalChart
+from .roundedcharts import NodalNodalChart
 from .. directions import strdate_to_date
 from collections import deque
 import datetime 
-from itertools import izip
+
 from .. boss import boss
 state = boss.get_state()
 aspclass = [4,0,1,2,3,1,4,1,3,2,1,0] 
@@ -325,7 +325,7 @@ def simple_paar(p1,cl1,p2,cl2):
 
 def count_paar_sum(paar):
     cpaar = {}
-    for k in paar.keys():
+    for k in list(paar.keys()):
         cpaar[k] = 0
         for i in paar[k]:
             if i > -1: cpaar[k] += 1
@@ -340,7 +340,7 @@ def count_paar_asp(paar):
     colcj = [0,2,0,2,1,2,0,2,2] # 0 r 1 g 2 b
     asptype = [0,0,0] # 0 conj 1 opos 2 rest 
     colglob = [0,0,0]
-    for k in paar.keys():
+    for k in list(paar.keys()):
         for p,i in enumerate(paar[k]):
             if i == 0: 
                 asptype[0] += 1
@@ -360,7 +360,7 @@ def count_paar_asp(paar):
 
 def count_paar_inasp(paar):
     inasp = {}
-    for k in paar.keys():
+    for k in list(paar.keys()):
         nor = [ (x+1) for x in paar[k] ]
         inasp[k] =  6 * [0]
         inasp[k][0] = nor[0] or nor[1] or nor[2]
@@ -375,7 +375,7 @@ def count_paar_inasp(paar):
 
 def count_paar_plan(paar):
     planpaar = { 'suns': 0, 'moons':0, 'sats':0 }
-    for k in paar.keys():
+    for k in list(paar.keys()):
         nor = [ (x+1) for x in paar[k] ]
         for i,n in enumerate(nor):
             if n and i in [0,1,2,3,6]:
@@ -388,7 +388,7 @@ def count_paar_plan(paar):
 
 def count_paar_cells(paar):
     cells = 9 * [0]
-    for k in paar.keys():
+    for k in list(paar.keys()):
         for i,c in enumerate(paar[k]):
             if c > -1:
                 cells[i] += 1
@@ -422,7 +422,7 @@ class PaarWabeMixin(object):
         asp, colglob = count_paar_asp(paar)
         inasp = count_paar_inasp(paar)
         sumshe = 27; sumhe = 27
-        for k in inasp.keys():
+        for k in list(inasp.keys()):
             sumshe -= sum(inasp[k][0:3])
             sumhe -= sum(inasp[k][3:])
         
@@ -2310,7 +2310,7 @@ class PaarWabeMixin(object):
         font = pango.FontDescription(boss.opts.font)
         font.set_size(int(36*pango.SCALE*r*MAGICK_FONTSCALE))
         layout.set_font_description(font)
-        layout.set_text(u"0\u00b0")
+        layout.set_text("0\u00b0")
         ink,logical = layout.get_extents()
         w = logical[2]/pango.SCALE
         cr.move_to(0-w/2, -r*1.25)
@@ -2624,7 +2624,7 @@ class PaarWabeMixin(object):
         rrr = rr * 0.95
         redpent = { '2': (0,c2*r*1.05), '1': (0,-c1*r-rr*0.8),
                 '3': (-s2*r*0.44,c2*r*0.44), '4': (s2*r*0.44,c2*r*0.44) }
-        for k,pos in redpent.iteritems():
+        for k,pos in redpent.items():
             cr.save()
             font = pango.FontDescription(boss.opts.font)
             font.set_size(int(22*pango.SCALE*r*MAGICK_FONTSCALE))
@@ -2674,7 +2674,7 @@ class PaarWabeMixin(object):
 
         bluepent = { '7': (-s1*r*0.5,-c1*r*2.3), '8': (s1*r*0.5,-c1*r*2.3),
                 '5': (-s2*r*0.715,-rr*0.85), '6': (s2*r*0.714,-rr*0.85) }
-        for k,pos in bluepent.iteritems():
+        for k,pos in bluepent.items():
             cr.save()
             font = pango.FontDescription(boss.opts.font)
             font.set_size(int(22*pango.SCALE*r*MAGICK_FONTSCALE))
@@ -3277,7 +3277,7 @@ def sparse_curve(plan):
             d += 360
         return d <= 1
     planque = deque(plan)
-    boolque = deque([diftuple(t) for t in izip(plan,plan[1:]+[plan[0]])])
+    boolque = deque([diftuple(t) for t in zip(plan,plan[1:]+[plan[0]])])
 
     if True in boolque:
         while boolque[0] != True or boolque[-1] != False:
@@ -3285,7 +3285,7 @@ def sparse_curve(plan):
             planque.rotate(-1) 
 
     jail = []; cell = set()
-    for low,btuple in izip(planque,boolque):
+    for low,btuple in zip(planque,boolque):
         cell.add((low)) 
         if btuple is False: 
             jail.append(cell)

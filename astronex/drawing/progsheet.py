@@ -2,7 +2,7 @@
 import cairo
 import pango
 from .. chart import zodnames,planames,aspnames
-from roundedcharts import NodalChart,SoulChart,LocalChart
+from .roundedcharts import NodalChart,SoulChart,LocalChart
 from .. boss import boss
 curr = boss.get_state()
 

@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta, tzinfo
 from pytz import timezone
 from bisect import bisect_right
-from tz_sup import oldtimes
+from .tz_sup import oldtimes
 
 _cache = {}
 
@@ -117,7 +117,7 @@ class NeXDate(object):
             minute = str(self.ld.minute).rjust(2,'0')
             sec = str(self.ld.second).rjust(2,'0')
             zname = self.ld.tzname()
-            print "here %s" % zname
+            print("here %s" % zname)
             td = self.ld.utcoffset()
             d, s = td.days, td.seconds
             if d < 0:
@@ -163,11 +163,11 @@ class FixedOffset(tzinfo):
     def localize(self, dt, is_dst=False):
         '''Convert naive time to local time'''
         if dt.tzinfo is not None:
-            raise ValueError, 'Not naive datetime (tzinfo is already set)'
+            raise ValueError('Not naive datetime (tzinfo is already set)')
         return dt.replace(tzinfo=self)
 
     def normalize(self, dt, is_dst=False):
         '''Correct the timezone information on the given datetime'''
         if dt.tzinfo is None:
-            raise ValueError, 'Naive time - no tzinfo set'
+            raise ValueError('Naive time - no tzinfo set')
         return dt.replace(tzinfo=self)

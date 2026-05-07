@@ -3,10 +3,10 @@ import sys
 import cairo, pango
 import math
 from math import pi as PI
-from itertools import cycle, izip
+from itertools import cycle
 from bisect import bisect_left
 from .. boss import boss
-from roundedcharts import Plagram, SoulChart, NodalChart
+from .roundedcharts import Plagram, SoulChart, NodalChart
 from .. extensions import euclid as eu
 from .. extensions.color_conv import Rgb2Hsl,Hsl2Rgb
 curr = boss.get_state()
@@ -535,7 +535,7 @@ class PlanetogramMixin(object):
             if ang_span < 0: ang_span = 360*RAD + ang_span
             prev_span = anglel_prev - anglec
             if prev_span < 0: prev_span = 360*RAD + prev_span
-            zcol = list(zone_cols.next())
+            zcol = list(next(zone_cols))
             zcol[-1] *= (((dyn[i]-mindyn)*60.0/span)+5)/100
             cr.move_to(cuspx,cuspy)
             cr.line_to(lowpx,lowpy)
@@ -563,7 +563,7 @@ class PlanetogramMixin(object):
             ipoint = cl.intersect(sl)
             cr.move_to(cuspx,cuspy)
             cr.line_to(ipoint.x,ipoint.y)
-            cr.set_source_rgba(*sect_cols.next())
+            cr.set_source_rgba(*next(sect_cols))
             cr.stroke()
             ang_mag2 = anglec - (sizes[i] * RAD * MAGICK_SECT_2)
             anglecn = cusps[(i+1)%12] * RAD
@@ -580,19 +580,19 @@ class PlanetogramMixin(object):
             cr.move_to(ipoint.x,ipoint.y)
             cr.line_to(lowpx,lowpy)
             cr.line_to(ipoint2.x,ipoint2.y)
-            cr.set_source_rgba(*sect_cols.next())
+            cr.set_source_rgba(*next(sect_cols))
             cr.stroke()
             cr.move_to(ipoint2.x,ipoint2.y)
             cr.line_to(ncuspx,ncuspy)
-            cr.set_source_rgba(*sect_cols.next())
+            cr.set_source_rgba(*next(sect_cols))
             cr.stroke()
 
         lw = cr.get_line_width()*1.1
         lpw = cr.get_line_width()*0.5
-        for anglec, anglel,hc in izip(cusps,lowps,house_circles):
+        for anglec, anglel,hc in zip(cusps,lowps,house_circles):
             anglec *= RAD
             anglel *= RAD
-            col = cusp_cols.next()
+            col = next(cusp_cols)
             cr.set_source_rgb(*col)
             cr.set_line_width(lw)
             fcusp = radius * HC[hc[0]-1]
@@ -605,10 +605,10 @@ class PlanetogramMixin(object):
             cr.set_source_rgb(*col)
             thex = radius*PE_OUTER*1.1*math.cos(anglec)
             they = radius*PE_OUTER*1.1*math.sin(anglec)
-            thiscusp = cuspnames.next()
+            thiscusp = next(cuspnames)
             _,_, width, height,_,_ = cr.text_extents(thiscusp)
-            x = width*dx.next()
-            y = height*dy.next() 
+            x = width*next(dx)
+            y = height*next(dy) 
             cr.move_to(thex+x,they+y)
             cr.show_text(thiscusp)
         cr.restore() 
@@ -745,7 +745,7 @@ class PlanetogramMixin(object):
                 ly = radius * HC[house_circles[h][0]-1] * math.sin(this_cusp*RAD)
                 thirdpoint = lx,ly 
             else:
-                print >> sys.stderr, "Bad angle:%s %d %f %f %f %f" % (chart.last, h, inf_ang, sup_ang, this_cusp, next_cusp)
+                print("Bad angle:%s %d %f %f %f %f" % (chart.last, h, inf_ang, sup_ang, this_cusp, next_cusp), file=sys.stderr)
                 #print "must not reach here!"
             
             pat = cairo.LinearGradient(bx_inf,by_inf,bx_sup,by_sup)
@@ -924,7 +924,7 @@ class PlanetogramMixin(object):
         R_RULEDINNER, R_RULEDOUTER = chartob.get_ruled()
         r_pl = radius * R_RULEDINNER * 0.95
         cr.set_source_rgb(0.5,0.5,0.5) 
-        for glyph,plot in izip(glyphs,plots):
+        for glyph,plot in zip(glyphs,plots):
             cr.save()
             rpl = r_pl * plot.fac
             angle = (plot.degree + plot.corr + 180.0) * RAD
@@ -951,7 +951,7 @@ class PlanetogramMixin(object):
         R_PL = NODAL_OUTER + (KAUSAL_OUTER - NODAL_OUTER )/2
         r_pl = radius *  R_PL
         cr.set_source_rgb(*magenta[0])
-        for glyph,plot in izip(glyphs,plots):
+        for glyph,plot in zip(glyphs,plots):
             cr.save()
             fac = plot.fac
             if fac < 1.0: fac = 0.98
@@ -985,7 +985,7 @@ class PlanetogramMixin(object):
         r_pl = radius *  R_PL
         r= radius * NODAL_OUTER
         cr.set_source_rgb(*violet[0])
-        for glyph,plot in izip(glyphs,plots):
+        for glyph,plot in zip(glyphs,plots):
             cr.save()
             fac = plot.fac
             if fac < 1.0: fac = 0.98
@@ -1025,7 +1025,7 @@ class PlanetogramMixin(object):
         self.set_font(cr,font_size)
         ysize = sizes[11] / 6
         corr_prev = yfrac * ysize
-        for off,size in izip(offsets,sizes):
+        for off,size in zip(offsets,sizes):
             ysize = size / 6
             corr = yfrac * ysize
             cr.set_source_rgb(0.5,0.8,0.4)
@@ -1070,7 +1070,7 @@ class PlanetogramMixin(object):
         cr.save()
         cr.set_line_width(0.5*cr.get_line_width())
         self.set_font(cr,font_size)
-        for off,size in izip(offsets,sizes):
+        for off,size in zip(offsets,sizes):
             ysize = size / 6
             cr.set_source_rgb(0.5,0.8,0.4)
             for j in range(0,6):

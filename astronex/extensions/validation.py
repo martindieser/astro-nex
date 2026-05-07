@@ -21,7 +21,7 @@ def set_background(widget, color, state=gtk.STATE_NORMAL):
 (INPUT_ASCII_LETTER,
  INPUT_ALPHA,
  INPUT_ALPHANUMERIC,
- INPUT_DIGIT) = range(4)
+ INPUT_DIGIT) = list(range(4))
 
 INPUT_FORMATS = {
     '0': INPUT_DIGIT,
@@ -33,9 +33,9 @@ INPUT_FORMATS = {
 
 INPUT_CHAR_MAP = {
     INPUT_ASCII_LETTER: lambda txt: txt in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-    INPUT_ALPHA:            unicode.isalpha,
-    INPUT_ALPHANUMERIC:     unicode.isalnum,
-    INPUT_DIGIT:            unicode.isdigit,
+    INPUT_ALPHA:            str.isalpha,
+    INPUT_ALPHANUMERIC:     str.isalnum,
+    INPUT_DIGIT:            str.isdigit,
     }
 
 
@@ -58,7 +58,7 @@ class MaskEntry(gtk.Entry):
 
     # Public API 
     def set_mask(self, mask):
-        mask = unicode(mask)
+        mask = str(mask)
         if not mask:
             self.modify_font(pango.FontDescription("sans"))
             self._mask = mask
@@ -103,7 +103,7 @@ class MaskEntry(gtk.Entry):
         pos = 0
         s = ''
         field_type = -1
-        text = unicode(self.get_text())
+        text = str(self.get_text())
         validators = self._mask_validators
         while True:
             if pos >= len(validators):
@@ -135,7 +135,7 @@ class MaskEntry(gtk.Entry):
         for validator in self._mask_validators[start:end]:
             if isinstance(validator, int):
                 s += ' '
-            elif isinstance(validator, unicode):
+            elif isinstance(validator, str):
                 s += validator
             else:
                 raise AssertionError
@@ -165,7 +165,7 @@ class MaskEntry(gtk.Entry):
         if isinstance(validator, int):
             if not INPUT_CHAR_MAP[validator](text):
                 return False
-        if isinstance(validator, unicode):
+        if isinstance(validator, str):
             if validator == text:
                 return True
             return False
@@ -178,7 +178,7 @@ class MaskEntry(gtk.Entry):
             return
 
         position = self.get_position()
-        new = unicode(new)
+        new = str(new)
         for inc, c in enumerate(new):
             if not self._confirms_to_mask(position + inc, c):
                 self.stop_emission('insert-text')
@@ -189,7 +189,7 @@ class MaskEntry(gtk.Entry):
         next = position + 1
         validators = self._mask_validators
         if len(validators) > next + 1:
-            if (isinstance(validators[next], unicode) and
+            if (isinstance(validators[next], str) and
                 isinstance(validators[next+1], int)):
                 gobject.idle_add(self.set_position, next+1)
 

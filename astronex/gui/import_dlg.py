@@ -7,229 +7,229 @@ import astronex.state as state
 from .. utils import degtodec
 curr = None
 
-mstar_bugloc = { 'Jaen': u'Jaén', 
-        'Almeria': u'Almería', 
-        'Avila': u'Ávila',
-        'Cadiz': u'Cádiz',
-        'Caceres': u'Cáceres',
-        'Cordoba': u'Córdoba',
-        'Leon': u'León',
-        'Malaga': u'Málaga',
-        'L Palmas de Gran Canaria': u'Las Palmas de Gran Canaria' }
+mstar_bugloc = { 'Jaen': 'Jaén', 
+        'Almeria': 'Almería', 
+        'Avila': 'Ávila',
+        'Cadiz': 'Cádiz',
+        'Caceres': 'Cáceres',
+        'Cordoba': 'Córdoba',
+        'Leon': 'León',
+        'Malaga': 'Málaga',
+        'L Palmas de Gran Canaria': 'Las Palmas de Gran Canaria' }
 
 ccodes = {
-'AFG':u'AF'	,	#Afganistán
-'ARM':u'AM'	,	#Armenia
-'ASB':u'AJ'	,	#Azerbaiján
-'BRN':u'BA'	,	#Bahrain
-'BD' :u'BG'  ,	#Bangla Desh
-'BHU':u'BT'	,	#Bhután
-'BRU':u'BX'	,	#Brunei
-'K'  :u'CB'  ,	#Camboya
-'TJ' :u'CH'  ,	#China
-'CY' :u'CY'  ,	#Chipre
-'GRG':u'GG'	,	#Georgia
-'HKG':u'HK'	,	#Hong Kong
-'IND':u'IN'	,	#India
-'RI' :u'ID'  ,	#Indonesia
-'IR' :u'IR'  ,	#Irán
-'IRQ':u'IZ'	,	#Irak
-'IL' :u'IS'  ,	#Israel
-'J'  :u'JA'  ,	#Japón
-'JOR':u'JO'	,	#Jordania
-'KAZ':u'KZ'	,	#Kazajstán
-'KOR':u'KN'	,	#Corea del Norte
-'ROK':u'KS'	,	#Corea del Sur
-'KWT':u'KU'	,	#Kuwait
-'KIR':u'KG'	,	#Kirguizistán
-'LAO':u'LA'	,	#Laos
-'RL' :u'LE'  ,	#Líbano
-'MAL':u'MY'	,	#Malasia
-'MDV':u'MV'	,	#Maldivas
-'MOG':u'MG'	,	#Mongolia
-'MYA':u'BM'	,	#Myanmar (Birmania)
-'NEP':u'NP'	,	#Nepal
-'OMN':u'MU'	,	#Omán
-'PAK':u'PK'	,	#Pakistán
-'RP' :u'RP'  ,	#Filipinas
-'Q'  :u'QA'  ,	#Qatar
-'SA' :u'SA'  ,	#Arabia Saudita
-'SGP':u'SN'	,	#Singapur
-'CL' :u'CE'  ,	#Sri Lanka
-'SYR':u'SY'	,	#Siria
-'RC' :u'TW'  ,	#Taiwán
-'TAJ':u'TI'	,	#Tadschikistan
-'THA':u'TH'	,	#Tailandia
-'TR' :u'TU'  ,	#Turquía
-'TUR':u'TX'	,	#Turkmenistan
-'UAE':u'AE'	,	#Emiratos Arabes
-'UZB':u'UZ'	,	#Uzbekistan
-'VN' :u'VM'  ,	#Vietnam
-'YMD':u'YM'	,	#Yemen
-'DZ' :u'AG'  ,	#Argelia
-'ANG':u'AO'	,	#Angola
-'RPH':u'BN'	,	#Benin
-'RB' :u'BC'  ,	#Botswana
-'BF' :u'UV'  ,	#Burkina Faso
-'BU' :u'BY'  ,	#Burundi
-'CAM':u'CM'	,	#Camerun
-'KVR':u'CV'	,	#Cabo Verde
-'RCA':u'CT'	,	#Central-Africa
-'CHA':u'CD'	,	#Chad
-'KOM':u'CN'	,	#Comoros
-'RCB':u'CF'	,	#Congo (Brazzaville)
-'ZR' :u'CG'  ,	#Congo (Kinshasa)
-'DH' :u'DJ'  ,	#Djibouti
-'ET' :u'EG'  ,	#Egipto
-'AQG':u'EK'	,	#Guinea ecuatorial
-'ETH':u'ET'	,	#Etiopía
-'GAB':u'GB'	,	#Gabón
-'GAM':u'GA'	,	#Gambia
-'GH' :u'GH'  ,	#Ghana
-'GUI':u'GV'	,	#Guinea
-'GBA':u'PU'	,	#Guinea-Bissau
-'CI' :u'IV'  ,	#Costa de Marfil
-'EAK':u'KE'	,	#Kenya
-'LS' :u'LT'  ,	#Lesotho
-'LB' :u'LI'  ,	#Liberia
-'LAR':u'LY'	,	#Libia
-'RM' :u'MA'  ,	#Madagascar
-'MW' :u'MI'  ,	#Malawi
-'RMM':u'ML'	,	#Mali
-'RIM':u'MR'	,	#Mauritania
-'MS' :u'MP'  ,	#Mauricio
-'MY' :u'MF'  ,	#Mayotte
-'MA' :u'MO'  ,	#Marruecos
-'MOZ':u'MZ'	,	#Mozambique
-'NAB':u'WA'	,	#Namibia
-'RN' :u'NG'  ,	#Níger
-'WAN':u'NI'	,	#Nigeria
-'REU':u'RE'	,	#Reunión
-'RWA':u'RW'	,	#Ruanda
-'SHA':u'SH'	,	#Santa Helena
-'STP':u'TP'	,	#Santo Tomé & Príncipe
-'SN' :u'SG'  ,	#Senegal
-'SY' :u'SE'  ,	#Seychelles
-'WAL':u'SL'	,	#Sierra Leona
-'SP' :u'SO'  ,	#Somalia
-'ZA' :u'SF'  ,	#Sudáfrica
-'FS' :u'SU'  ,	#Sudán
-'SD' :u'WZ'  ,	#Swazilandia
-'EAT':u'TZ'	,	#Tanzania
-'TG' :u'TO'  ,	#Togo
-'TN' :u'TS'  ,	#Túnez
-'EAV':u'UG'	,	#Uganda
-'Z'  :u'ZA'  ,	#Zambia
-'ZW' :u'ZI'  ,	#Zimbabwe
-'ANT':u'AC'	,	#Antigua & Barbuda
-'RA' :u'AR'  ,	#Argentina
-'AGU':u'AV'	,	#Anguilla
-'BDS':u'BB'	,	#Barbados
-'BPA':u'BD'	,	#Bermudas
-'BS' :u'BF'  ,	#Bahamas
-'BH' :u'BH'  ,	#Belice
-'BOL':u'BL'	,	#Bolivia
-'BR' :u'BR'  ,	#Brasil
-'CDN':u'CA'	,	#Canadá
-'RCH':u'CI'	,	#Chile
-'CAY':u'CJ'	,	#Islas Caimán
-'CO' :u'CO'  ,	#Colombia
-'CR' :u'CS'  ,	#Costa Rica
-'C'  :u'CU'  ,	#Cuba
-'WD' :u'DO'  ,	#Dominica
-'DOM':u'DR'	,	#República Dominicana
-'EC' :u'EC'  ,	#Ecuador
-'ES' :u'ES'  ,	#El Salvador
-'FGU':u'FG'	,	#Guayana Fr.
-'FGB':u'FK'	,	#Islas Malvinas
-'WG' :u'GJ'  ,	#Granada
-'GRO':u'GL'	,	#Groenlandia
-'GKA':u'GP'	,	#Guadalupe
-'GCA':u'GT'	,	#Guatemala
-'GUY':u'GY'	,	#Guyana
-'RH' :u'HA'  ,	#Haití
-'HON':u'HO'	,	#Honduras
-'JA' :u'JM'  ,	#Jamaica
-'MQU':u'MB'	,	#Martinique
-'MTT':u'MH'	,	#Montserrat
-'MEX':u'MX'	,	#México
-'SME':u'NS'	,	#Suriname
-'NIC':u'NU'	,	#Nicaragua
-'FPY':u'PA'	,	#Paraguay
-'PE' :u'PE'  ,	#Perú
-'PA' :u'PM'  ,	#Panamá
-'SPM':u'SB'	,	#San Pierre & Miquelon
-'STL':u'ST'	,	#Santa Lucia
-'TT' :u'TD'  ,	#Trinidad & Tabago
-'TCO':u'TK'	,	#Turcos & Caicos
-'U'  :u'UY'  ,	#Uruguay
-'WV' :u'VC'  ,	#San Vincente & Granadinas
-'YV' :u'VE'  ,	#Venezuela
-'VRG':u'VI'	,	#Is. Vírgenes
-'AUS':u'AS'	,	#Australia
-'SOL':u'BP'	,	#Islas Salomón
-'CSP':u'CW'	,	#Islas Cook
-'FJI':u'FJ'	,	#Fiji
-'FSP':u'FP'	,	#Polinesia
-'KSP':u'KR'	,	#Kiribati
-'NKP':u'NC'	,	#Nueva Caledonia
-'NIU':u'NE'	,	#Niue
-'NFI':u'NF'	,	#Islas Norfolk
-'VAN':u'NH'	,	#Vanuatu
-'NSP':u'NR'	,	#Nauru
-'NZ' :u'NZ'  ,	#Nueva Zelanda
-'PNG':u'PP'	,	#Papua Nueva Guinea
-'PSP':u'PC'	,	#Pitcairn
-'MSH':u'RM'	,	#Islas Marshall 
-'TSP':u'TL'	,	#Tokelau
-'TGA':u'TN'	,	#Tonga
-'TVL':u'TV'	,	#Tuvalu
-'WFP':u'WF'	,	#Wallis & Futuna
-'WS' :u'WS'  ,	#Samoa-oeste
-'AL' :u'AL'  ,	#Albania
-'AND':u'AN'	,	#Andorra
-'A'  :u'AU'  ,	#Austria
-'WRS':u'BO'	,	#Bielorrusia
-'B'  :u'BE'  ,	#Bélgica
-'BHG':u'BK'	,	#Bosnia Herzegovina
-'BG' :u'BU'  ,	#Bulgaria
-'KRO':u'HR'	,	#Croacia
-'CS' :u'EZ'  ,	#Checoslovaquia
-'DK' :u'DA'  ,	#Dinamarca
-'EST':u'EN'	,	#Estonia
-'FOI':u'FO'	,	#Islas Faroe
-'SF' :u'FI'  ,	#Finlandia
-'F'  :u'FR'  ,	#Francia
-'D'  :u'GM'  ,	#Alemania
-'GR' :u'GR'  ,	#Grecia
-'H'  :u'HU'  ,	#Hungría
-'IS' :u'IC'  ,	#Islandia
-'IRL':u'EI'	,	#Irlanda
-'I'  :u'IT'  ,	#Italia
-'LET':u'LG'	,	#Letonia
-'FL' :u'LS'  ,	#Liechtenstein
-'LIT':u'LH'	,	#Lituania
-'L'  :u'LU'  ,	#Luxemburgo
-'MAK':u'MK'	,	#Macedonia
-'M'  :u'MT'  ,	#Malta
-'MOL':u'MD'	,	#Moldavia
-'MC' :u'MN'  ,	#Monaco
-'NL' :u'NL'  ,	#Países Bajos
-'N'  :u'NO'  ,	#Noruega
-'PL' :u'PL'  ,	#Polonia
-'P'  :u'PO'  ,	#Portugal
-'R'  :u'RO'  ,	#Rumanía
-'RSM':u'SM'	,	#San Marino
-'YU' :u'YI'  ,	#Serbia & Montenegro
-'SLO':u'SI'	,	#Eslovenia
-'E'  :u'SP'  ,	#España
-'S'  :u'SW'  ,	#Suecia
-'CH' :u'SZ'  ,	#Suiza
-'UKR':u'UP'	,	#Ucrania
-'GBE':u'UK'	,	#Inglaterra
-'SCO':u'UK'	,	#Inglaterra
-'NIR':u'UK'	,	#Inglaterra
-'SSR':u'RS'	}	#Rusia 
+'AFG':'AF'	,	#Afganistán
+'ARM':'AM'	,	#Armenia
+'ASB':'AJ'	,	#Azerbaiján
+'BRN':'BA'	,	#Bahrain
+'BD' :'BG'  ,	#Bangla Desh
+'BHU':'BT'	,	#Bhután
+'BRU':'BX'	,	#Brunei
+'K'  :'CB'  ,	#Camboya
+'TJ' :'CH'  ,	#China
+'CY' :'CY'  ,	#Chipre
+'GRG':'GG'	,	#Georgia
+'HKG':'HK'	,	#Hong Kong
+'IND':'IN'	,	#India
+'RI' :'ID'  ,	#Indonesia
+'IR' :'IR'  ,	#Irán
+'IRQ':'IZ'	,	#Irak
+'IL' :'IS'  ,	#Israel
+'J'  :'JA'  ,	#Japón
+'JOR':'JO'	,	#Jordania
+'KAZ':'KZ'	,	#Kazajstán
+'KOR':'KN'	,	#Corea del Norte
+'ROK':'KS'	,	#Corea del Sur
+'KWT':'KU'	,	#Kuwait
+'KIR':'KG'	,	#Kirguizistán
+'LAO':'LA'	,	#Laos
+'RL' :'LE'  ,	#Líbano
+'MAL':'MY'	,	#Malasia
+'MDV':'MV'	,	#Maldivas
+'MOG':'MG'	,	#Mongolia
+'MYA':'BM'	,	#Myanmar (Birmania)
+'NEP':'NP'	,	#Nepal
+'OMN':'MU'	,	#Omán
+'PAK':'PK'	,	#Pakistán
+'RP' :'RP'  ,	#Filipinas
+'Q'  :'QA'  ,	#Qatar
+'SA' :'SA'  ,	#Arabia Saudita
+'SGP':'SN'	,	#Singapur
+'CL' :'CE'  ,	#Sri Lanka
+'SYR':'SY'	,	#Siria
+'RC' :'TW'  ,	#Taiwán
+'TAJ':'TI'	,	#Tadschikistan
+'THA':'TH'	,	#Tailandia
+'TR' :'TU'  ,	#Turquía
+'TUR':'TX'	,	#Turkmenistan
+'UAE':'AE'	,	#Emiratos Arabes
+'UZB':'UZ'	,	#Uzbekistan
+'VN' :'VM'  ,	#Vietnam
+'YMD':'YM'	,	#Yemen
+'DZ' :'AG'  ,	#Argelia
+'ANG':'AO'	,	#Angola
+'RPH':'BN'	,	#Benin
+'RB' :'BC'  ,	#Botswana
+'BF' :'UV'  ,	#Burkina Faso
+'BU' :'BY'  ,	#Burundi
+'CAM':'CM'	,	#Camerun
+'KVR':'CV'	,	#Cabo Verde
+'RCA':'CT'	,	#Central-Africa
+'CHA':'CD'	,	#Chad
+'KOM':'CN'	,	#Comoros
+'RCB':'CF'	,	#Congo (Brazzaville)
+'ZR' :'CG'  ,	#Congo (Kinshasa)
+'DH' :'DJ'  ,	#Djibouti
+'ET' :'EG'  ,	#Egipto
+'AQG':'EK'	,	#Guinea ecuatorial
+'ETH':'ET'	,	#Etiopía
+'GAB':'GB'	,	#Gabón
+'GAM':'GA'	,	#Gambia
+'GH' :'GH'  ,	#Ghana
+'GUI':'GV'	,	#Guinea
+'GBA':'PU'	,	#Guinea-Bissau
+'CI' :'IV'  ,	#Costa de Marfil
+'EAK':'KE'	,	#Kenya
+'LS' :'LT'  ,	#Lesotho
+'LB' :'LI'  ,	#Liberia
+'LAR':'LY'	,	#Libia
+'RM' :'MA'  ,	#Madagascar
+'MW' :'MI'  ,	#Malawi
+'RMM':'ML'	,	#Mali
+'RIM':'MR'	,	#Mauritania
+'MS' :'MP'  ,	#Mauricio
+'MY' :'MF'  ,	#Mayotte
+'MA' :'MO'  ,	#Marruecos
+'MOZ':'MZ'	,	#Mozambique
+'NAB':'WA'	,	#Namibia
+'RN' :'NG'  ,	#Níger
+'WAN':'NI'	,	#Nigeria
+'REU':'RE'	,	#Reunión
+'RWA':'RW'	,	#Ruanda
+'SHA':'SH'	,	#Santa Helena
+'STP':'TP'	,	#Santo Tomé & Príncipe
+'SN' :'SG'  ,	#Senegal
+'SY' :'SE'  ,	#Seychelles
+'WAL':'SL'	,	#Sierra Leona
+'SP' :'SO'  ,	#Somalia
+'ZA' :'SF'  ,	#Sudáfrica
+'FS' :'SU'  ,	#Sudán
+'SD' :'WZ'  ,	#Swazilandia
+'EAT':'TZ'	,	#Tanzania
+'TG' :'TO'  ,	#Togo
+'TN' :'TS'  ,	#Túnez
+'EAV':'UG'	,	#Uganda
+'Z'  :'ZA'  ,	#Zambia
+'ZW' :'ZI'  ,	#Zimbabwe
+'ANT':'AC'	,	#Antigua & Barbuda
+'RA' :'AR'  ,	#Argentina
+'AGU':'AV'	,	#Anguilla
+'BDS':'BB'	,	#Barbados
+'BPA':'BD'	,	#Bermudas
+'BS' :'BF'  ,	#Bahamas
+'BH' :'BH'  ,	#Belice
+'BOL':'BL'	,	#Bolivia
+'BR' :'BR'  ,	#Brasil
+'CDN':'CA'	,	#Canadá
+'RCH':'CI'	,	#Chile
+'CAY':'CJ'	,	#Islas Caimán
+'CO' :'CO'  ,	#Colombia
+'CR' :'CS'  ,	#Costa Rica
+'C'  :'CU'  ,	#Cuba
+'WD' :'DO'  ,	#Dominica
+'DOM':'DR'	,	#República Dominicana
+'EC' :'EC'  ,	#Ecuador
+'ES' :'ES'  ,	#El Salvador
+'FGU':'FG'	,	#Guayana Fr.
+'FGB':'FK'	,	#Islas Malvinas
+'WG' :'GJ'  ,	#Granada
+'GRO':'GL'	,	#Groenlandia
+'GKA':'GP'	,	#Guadalupe
+'GCA':'GT'	,	#Guatemala
+'GUY':'GY'	,	#Guyana
+'RH' :'HA'  ,	#Haití
+'HON':'HO'	,	#Honduras
+'JA' :'JM'  ,	#Jamaica
+'MQU':'MB'	,	#Martinique
+'MTT':'MH'	,	#Montserrat
+'MEX':'MX'	,	#México
+'SME':'NS'	,	#Suriname
+'NIC':'NU'	,	#Nicaragua
+'FPY':'PA'	,	#Paraguay
+'PE' :'PE'  ,	#Perú
+'PA' :'PM'  ,	#Panamá
+'SPM':'SB'	,	#San Pierre & Miquelon
+'STL':'ST'	,	#Santa Lucia
+'TT' :'TD'  ,	#Trinidad & Tabago
+'TCO':'TK'	,	#Turcos & Caicos
+'U'  :'UY'  ,	#Uruguay
+'WV' :'VC'  ,	#San Vincente & Granadinas
+'YV' :'VE'  ,	#Venezuela
+'VRG':'VI'	,	#Is. Vírgenes
+'AUS':'AS'	,	#Australia
+'SOL':'BP'	,	#Islas Salomón
+'CSP':'CW'	,	#Islas Cook
+'FJI':'FJ'	,	#Fiji
+'FSP':'FP'	,	#Polinesia
+'KSP':'KR'	,	#Kiribati
+'NKP':'NC'	,	#Nueva Caledonia
+'NIU':'NE'	,	#Niue
+'NFI':'NF'	,	#Islas Norfolk
+'VAN':'NH'	,	#Vanuatu
+'NSP':'NR'	,	#Nauru
+'NZ' :'NZ'  ,	#Nueva Zelanda
+'PNG':'PP'	,	#Papua Nueva Guinea
+'PSP':'PC'	,	#Pitcairn
+'MSH':'RM'	,	#Islas Marshall 
+'TSP':'TL'	,	#Tokelau
+'TGA':'TN'	,	#Tonga
+'TVL':'TV'	,	#Tuvalu
+'WFP':'WF'	,	#Wallis & Futuna
+'WS' :'WS'  ,	#Samoa-oeste
+'AL' :'AL'  ,	#Albania
+'AND':'AN'	,	#Andorra
+'A'  :'AU'  ,	#Austria
+'WRS':'BO'	,	#Bielorrusia
+'B'  :'BE'  ,	#Bélgica
+'BHG':'BK'	,	#Bosnia Herzegovina
+'BG' :'BU'  ,	#Bulgaria
+'KRO':'HR'	,	#Croacia
+'CS' :'EZ'  ,	#Checoslovaquia
+'DK' :'DA'  ,	#Dinamarca
+'EST':'EN'	,	#Estonia
+'FOI':'FO'	,	#Islas Faroe
+'SF' :'FI'  ,	#Finlandia
+'F'  :'FR'  ,	#Francia
+'D'  :'GM'  ,	#Alemania
+'GR' :'GR'  ,	#Grecia
+'H'  :'HU'  ,	#Hungría
+'IS' :'IC'  ,	#Islandia
+'IRL':'EI'	,	#Irlanda
+'I'  :'IT'  ,	#Italia
+'LET':'LG'	,	#Letonia
+'FL' :'LS'  ,	#Liechtenstein
+'LIT':'LH'	,	#Lituania
+'L'  :'LU'  ,	#Luxemburgo
+'MAK':'MK'	,	#Macedonia
+'M'  :'MT'  ,	#Malta
+'MOL':'MD'	,	#Moldavia
+'MC' :'MN'  ,	#Monaco
+'NL' :'NL'  ,	#Países Bajos
+'N'  :'NO'  ,	#Noruega
+'PL' :'PL'  ,	#Polonia
+'P'  :'PO'  ,	#Portugal
+'R'  :'RO'  ,	#Rumanía
+'RSM':'SM'	,	#San Marino
+'YU' :'YI'  ,	#Serbia & Montenegro
+'SLO':'SI'	,	#Eslovenia
+'E'  :'SP'  ,	#España
+'S'  :'SW'  ,	#Suecia
+'CH' :'SZ'  ,	#Suiza
+'UKR':'UP'	,	#Ucrania
+'GBE':'UK'	,	#Inglaterra
+'SCO':'UK'	,	#Inglaterra
+'NIR':'UK'	,	#Inglaterra
+'SSR':'RS'	}	#Rusia 
 #US	Estados Unidos
 usa = {
 'New York': 'Nueva York',
@@ -311,7 +311,7 @@ def parse_aaf(file,tname,con,sim,browser,encoding):
             city = city.split('/')[0]
             city = city.split('-')[0]
             city = city.lower()
-            city = ' '.join(map(lambda s:cust_cap(s), city.split(' '))) 
+            city = ' '.join([cust_cap(s) for s in city.split(' ')]) 
             try:
                 ccode = ccodes[ccode].decode('utf8')
             except KeyError:
@@ -331,7 +331,7 @@ def parse_aaf(file,tname,con,sim,browser,encoding):
             else: 
                 try:
                     ccode = ccodes[ccode]
-                except KeyError,arg:
+                except KeyError as arg:
                     buf.insert_with_tags(end,
                             _("codigo pais no encontrado: %s\n") % (arg),err)
                     continue

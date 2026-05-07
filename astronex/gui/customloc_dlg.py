@@ -2,11 +2,11 @@
 import gtk
 import os
 import re
-from itertools import izip,count
+from itertools importcount
 from .. extensions.path import path
 from .. extensions.validation import MaskEntry
 from .. utils import degtodec 
-from localwidget import LocWidget
+from .localwidget import LocWidget
 from .. countries import cata_reg
 from .. boss import boss 
 curr = boss.get_state()
@@ -95,10 +95,10 @@ class CustomLocDlg(gtk.Dialog):
         count  = model.get_value(iter,4) 
         self.widget.locentry.set_text(city)
         self.widget.country_combo.child.set_text(count)
-        long,lat = geo.split(' ')
-        d,L,m = long.partition('E')
+        int,lat = geo.split(' ')
+        d,L,m = int.partition('E')
         if L == '':
-            d,L,m = long.partition('W') 
+            d,L,m = int.partition('W') 
         self.widget.gcombos[0].set_active(['E','W'].index(L))
         self.widget.gentries[0].set_text(".".join([d.rjust(3,'0'),m,'00']))
         L = ''
@@ -167,7 +167,7 @@ class CustomLocWidget(gtk.VBox):
         self.locmodel = None
 
         self.sortlist = sorted(self.countries.keys())
-        revlist = dict((reversed(list(i)) for i in self.countries.items()))
+        revlist = dict((reversed(list(i)) for i in list(self.countries.items())))
         default = self.sortlist.index(revlist[self.countrycode])
         
         # country label and check btns 
@@ -212,7 +212,7 @@ class CustomLocWidget(gtk.VBox):
         self.reg_combo.pack_start(cell)
         self.reg_combo.connect('changed',self.on_reg_selected)
         rlist = datab.list_regions(self.countrycode)
-        if self.countrycode == u"SP" and boss.opts.lang == 'ca':
+        if self.countrycode == "SP" and boss.opts.lang == 'ca':
             temp = []
             for r in rlist:
                 temp.append((cata_reg[r[0]],r[1]))
@@ -250,13 +250,13 @@ class CustomLocWidget(gtk.VBox):
         self.gentries = []
         self.longdeg = "0"
         long = MaskEntry()
-        long.set_mask("000.00.00")
-        mask = long.get_mask()
-        long.set_width_chars(len(mask))
-        long.set_text("000.00.00")
-        long.connect("changed",self.on_geoentry_changed,'long')
-        table.attach(long,1,2,1,2)
-        self.gentries.append(long)
+        int.set_mask("000.00.00")
+        mask = int.get_mask()
+        int.set_width_chars(len(mask))
+        int.set_text("000.00.00")
+        int.connect("changed",self.on_geoentry_changed,'long')
+        table.attach(int,1,2,1,2)
+        self.gentries.append(int)
         
         self.gcombos = []
         store = gtk.ListStore(str)
@@ -311,7 +311,7 @@ class CustomLocWidget(gtk.VBox):
                 self.locview.set_model(filtmodel)
 
     def on_count_selected(self,combo):
-        sel = unicode(combo.get_active_text(),"utf-8")
+        sel = str(combo.get_active_text(),"utf-8")
         try:
             code = self.countries[sel]
             liststore = gtk.ListStore(str,str)
@@ -328,7 +328,7 @@ class CustomLocWidget(gtk.VBox):
             self.countrycode = code 
 
     def on_count_match(self,compl,model,iter):
-        sel = unicode(model.get_value(iter,0),"utf-8")
+        sel = str(model.get_value(iter,0),"utf-8")
         sl = self.sortlist
         self.country_combo.set_active(sl.index(sel))
 

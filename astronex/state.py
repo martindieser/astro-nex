@@ -1,10 +1,10 @@
 import pysw
-import chart
-import database
+from . import chart
+from . import database
 from collections import deque
-from utils import PersonInfo,dectodeg,parsestrtime
-from nexdate import NeXDate
-from extensions.path import path
+from .utils import PersonInfo,dectodeg,parsestrtime
+from .nexdate import NeXDate
+from .extensions.path import path
 import pickle
 
 datlist = deque(['dat_nat','dat_house','dat_nod','prog_nat','prog_nod','prog_local','prog_soul'])
@@ -158,11 +158,11 @@ class Current(object):
         if self.usa:
             fetch = self.datab.fetch_usacity
         try:
-            fetch(self.country, unicode(city,"utf-8"), code, self.loc)
+            fetch(self.country, str(city,"utf-8"), code, self.loc)
             self.date.settz(self.loc.zone)
             self.calcdt.settz(self.loc.zone)
         except StopIteration:
-            print "localidad no encontrada: %s" % city
+            print("localidad no encontrada: %s" % city)
 
     def set_op(self, op):
         self.curr_op = op
@@ -338,25 +338,25 @@ class Current(object):
                 break
 
     def chiron(self,ch):
-        from directions import strdate_to_date
+        from .directions import strdate_to_date
         import datetime
         from pytz import timezone
         dt = strdate_to_date(ch.date)
         dt = datetime.datetime.combine(dt.date(),dt.time())
         nxdate = NeXDate(self,dt,timezone(ch.zone))
         chi = ch.chiron_calc(nxdate.dateforcalc(),self.epheflag)
-        print chi
+        print(chi)
         #return nxdate
 
     def vulcan(self,ch):
-        from directions import strdate_to_date
+        from .directions import strdate_to_date
         import datetime
         from pytz import timezone
         dt = strdate_to_date(ch.date)
         dt = datetime.datetime.combine(dt.date(),dt.time())
         nxdate = NeXDate(self,dt,timezone(ch.zone))
         vulc = ch.vulcan_calc(nxdate.dateforcalc(),self.epheflag)
-        print vulc
+        print(vulc)
         #return nxdate
 
 

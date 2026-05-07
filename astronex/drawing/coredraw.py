@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import cairo, pango
 import math
-from itertools import izip,cycle
+from itertools importcycle
 from math import pi as PI
-from roundedcharts import RadixChart, NodalChart
+from .roundedcharts import RadixChart, NodalChart
 from .. boss import boss
 
 PHI = 1 / ((1+math.sqrt(5))/2)
@@ -166,7 +166,7 @@ class CoreMixin(object):
         cr.set_source_rgb(0.4,0.4,0.4)
         cr.set_line_width(0.5*cr.get_line_width())
         self.set_font(cr,font_size)
-        for off,size in izip(offsets,sizes):
+        for off,size in zip(offsets,sizes):
             year += 1
             ysize = size / 6
             for j in range(1,6):
@@ -212,7 +212,7 @@ class CoreMixin(object):
         radius = radius * rule
 
         default = insets.pop()
-        insets = dict(zip((0,5),insets))
+        insets = dict(list(zip((0,5),insets)))
         try:
             col = chartob.rulecol
         except AttributeError:
@@ -222,7 +222,7 @@ class CoreMixin(object):
         if chartob.name == 'soul':
             cr.set_source_rgb(0.2,0,0.2)
         cr.set_line_width(0.5*cr.get_line_width())
-        for i in xrange(360):
+        for i in range(360):
             angle = (offset+i) * RAD
             inset = radius - insets.get(i%10,default)
             self.d_radial_line(cr,radius,inset,angle)
@@ -285,7 +285,7 @@ class CoreMixin(object):
 
         for i,z in enumerate(zodiac):
             cr.save()
-            cr.rotate(offsets.next() * RAD)
+            cr.rotate(next(offsets) * RAD)
             x_bearing,_,width,_,_,_ = z.extents
             sclx = chartob.get_sclx(scly)
             cr.translate(sclx*(-width/2-x_bearing),-radius*sign_fac)
@@ -358,7 +358,7 @@ class CoreMixin(object):
         scl = radius * chartob.plan_scale
         r_pl = radius *  chartob.get_rpl()
         click_col = chartob.get_col()
-        for glyph,plot in izip(glyphs,plots):
+        for glyph,plot in zip(glyphs,plots):
             cr.save()
             rpl = r_pl * plot.fac
             angle = (plot.degree + plot.corr) * RAD
@@ -389,7 +389,7 @@ class CoreMixin(object):
         glyphs = chartob.plmanager.glyphs
         scl = radius * chartob.plan_scale
         r_pl = radius *  chartob.get_rpl()
-        for glyph,plot in izip(glyphs,plots):
+        for glyph,plot in zip(glyphs,plots):
             cr.save()
             rpl = r_pl * plot.fac
 
@@ -423,7 +423,7 @@ class CoreMixin(object):
         cr.set_line_width(line_width*lw)
         plots = getattr(chartob.plmanager,plot)
         glyphs = chartob.plmanager.glyphs
-        for glyph,plt in izip(glyphs,plots):
+        for glyph,plt in zip(glyphs,plots):
             angle = plt.degree * RAD
             if not click_col:
                 cr.set_source_rgb(*glyph.col)
@@ -524,15 +524,15 @@ class CoreMixin(object):
         dy = iter(chartob.dy)
         for angle in chartob.get_cusps_offsets():
             angle *= RAD
-            cr.set_line_width(lwidth_iter.next()*lw)
-            cr.set_source_rgb(*cusp_cols.next())
+            cr.set_line_width(next(lwidth_iter)*lw)
+            cr.set_source_rgb(*next(cusp_cols))
             self.d_radial_line(cr,fcusp,radius,angle)
             thex = fcusp*math.cos(angle)
             they = fcusp*math.sin(angle)
-            thiscusp = cuspnames.next()
+            thiscusp = next(cuspnames)
             _,_, width, height,_,_ = cr.text_extents(thiscusp)
-            x = width*dx.next()
-            y = height*dy.next()
+            x = width*next(dx)
+            y = height*next(dy)
             cr.move_to(thex+x,they+y)
             cr.show_text(thiscusp)
         cr.restore()
@@ -552,7 +552,7 @@ class CoreMixin(object):
         cr.stroke()
         cr.set_line_width(5*lw)
         cr.set_line_cap(cairo.LINE_CAP_BUTT)
-        for house,size in izip(offsets,sizes):
+        for house,size in zip(offsets,sizes):
             prev_angle = house*RAD
             for i,c in enumerate(cols):
                 #cr.set_source_rgba(*(list(c)+[0.7]))
@@ -669,7 +669,7 @@ class CoreMixin(object):
         maskpat.add_color_stop_rgba(1,0,0,0,0)
 
         for i in range(12):
-            off = cusps.next()
+            off = next(cusps)
             size = sizes[i]
             talk = size * PHI
             inv = size - talk
@@ -781,10 +781,10 @@ class CoreMixin(object):
         insets = [radius * i for i in rules[rule]]
         radius = radius * rule
         default = insets.pop()
-        insets = dict(zip((0,5),insets))
+        insets = dict(list(zip((0,5),insets)))
         cr.save()
         cr.set_line_width(0.5*cr.get_line_width())
-        for i in xrange(360):
+        for i in range(360):
             if i % 30 == 0:
                 cr.set_source_rgb(*cols[(asc + i/30)%4])
             angle = (180+offset-i) * RAD

@@ -4,15 +4,15 @@ import sys, os
 import glob
 import gettext
 import atexit
-import countries
-from config import read_config
+from . import countries
+from .config import read_config
 lang_es = gettext.translation('astronex','./astronex/locale', languages=['es'])
 lang_en = gettext.translation('astronex','./astronex/locale', languages=['en'])
 lang_ca = gettext.translation('astronex','./astronex/locale', languages=['ca'])
 lang_de = gettext.translation('astronex','./astronex/locale', languages=['de'])
 langs = { 'en': lang_en, 'es': lang_es, 'ca': lang_ca, 'de': lang_de }
 
-from extensions.path import path
+from .extensions.path import path
 version = "1.2"
 
 def die(message):
@@ -83,14 +83,14 @@ def init_config(homedir,opts,state):
         except:
             pass
 
-    from chart import orbs as ch_orbs
+    from .chart import orbs as ch_orbs
     orbs = [opts.lum,opts.normal,opts.short,opts.far,opts.useless]
     for l in orbs:
-        state.orbs.append(map(float,l))
-        ch_orbs.append(map(float,l))
+        state.orbs.append(list(map(float,l)))
+        ch_orbs.append(list(map(float,l)))
     peorbs = [opts.pelum,opts.penormal,opts.peshort,opts.pefar,opts.peuseless]
     for l in peorbs:
-        state.peorbs.append(map(float,l))
+        state.peorbs.append(list(map(float,l)))
     for l in opts.transits:
         state.transits.append(float(l))
     opts.discard = [ int(x) for x in opts.discard ]
@@ -158,8 +158,8 @@ class application(object):
         langs[opts.lang].install()
         countries.install(opts.lang)
         self.lang = opts.lang
-        from state import Current
-        from boss import Manager
+        from .state import Current
+        from .boss import Manager
         state = Current(self)
         init_config(self.home_dir,opts,state)
         boss = Manager(self,opts,state)
@@ -172,13 +172,13 @@ class application(object):
         langs[opts.lang].install()
         countries.install(opts.lang)
         self.lang = opts.lang
-        from state import Current
-        from boss import Manager
+        from .state import Current
+        from .boss import Manager
         state = Current(self)
         atexit.register(state.save_pool,self)
         init_config(self.home_dir,opts,state)
         boss = Manager(self,opts,state)
-        from gui.winnex import WinNex
+        from .gui.winnex import WinNex
         mainwin = WinNex(boss)
         boss.set_mainwin(mainwin)
         #if 'DEBUG_NEX' in os.environ:

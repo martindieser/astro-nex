@@ -3,9 +3,10 @@ import pysw
 from math import sqrt,cos,sin,pi
 from datetime import datetime,timedelta,time
 from pytz import timezone
-from utils import parsestrtime, strdate_to_date
-from nexdate import NeXDate
-from drawing import roundedcharts 
+from .utils import parsestrtime, strdate_to_date
+from .nexdate import NeXDate
+from .drawing import roundedcharts 
+from functools import reduce
 boss = None
 RAD = pi / 180
 PHI = 1 / ((1+sqrt(5))/2)
@@ -78,7 +79,7 @@ class Chart(object):
                 continue
             err,l,s,mes = pysw.calc_ut_with_speed(d,i,epheflag)
             if err < 0:
-                print("error: %s" % mes)
+                print(("error: %s" % mes))
                 return None
             sg = self.which_sign(l)
             sg['speed'] = s
@@ -413,7 +414,7 @@ class Chart(object):
         mint = str(mint).rjust(2,'0')
         deg = int(deg)
         deg = str(deg).rjust(2,'0')
-        return { 'deg': u"%s\u00b0 %s\u00b4" % (deg,mint), 'name': name , 'col': col}
+        return { 'deg': "%s\u00b0 %s\u00b4" % (deg,mint), 'name': name , 'col': col}
 
     def which_house(self,p):
         point = p
@@ -563,7 +564,7 @@ class Chart(object):
         srow = tots,cr['card'],cr['fix'],cr['mut'],el['fire'],el['earth'],el['air'],el['water']
         cr = dh['cross']; el = dh['elem']
         hrow = toth,cr['card'],cr['fix'],cr['mut'],el['fire'],el['earth'],el['air'],el['water'] 
-        whole = zip(hrow,srow)
+        whole = list(zip(hrow,srow))
         dif = []
         for pair in whole:
             dif.append(reduce(lambda x,y:x-y,pair))
@@ -856,7 +857,7 @@ class Chart(object):
                 wh = h
                 break
         else:
-            print now,t['begin'],'playagain'
+            print(now,t['begin'],'playagain')
             for h in range(12):
                 t = self.house_time_lapsus(h,playagain=cycles)
                 if (now - t['begin']) < t['lapsus']:

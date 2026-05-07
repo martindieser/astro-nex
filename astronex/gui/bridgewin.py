@@ -7,7 +7,7 @@ from .. drawing.coredraw import CoreMixin
 from .. drawing.biograph import BioMixin
 from .. drawing.dispatcher import DrawMixin, AspectManager
 from .. drawing.roundedcharts import Basic_Chart,RadixChart,NodalChart
-from mainnb import Slot
+from .mainnb import Slot
 
 curr = None
 boss = None

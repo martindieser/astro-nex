@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import gtk
-from localwidget import LocWidget
+from .localwidget import LocWidget
 curr = None
 
 

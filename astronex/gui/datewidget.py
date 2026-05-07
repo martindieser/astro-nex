@@ -117,7 +117,7 @@ class _DateEntryPopup(gtk.Window):
         self.set_date(datetime.date.today())
 
     def _popup_grab_window(self):
-        activate_time = 0L
+        activate_time = 0
         if gdk.pointer_grab(self.window, True,
                             (gdk.BUTTON_PRESS_MASK |
                              gdk.BUTTON_RELEASE_MASK |
@@ -333,14 +333,14 @@ class DateEntry(gtk.HBox):
             try:
                 self.date = self.get_date()
                 set_background(entry, "#ffffff")
-            except ValidationError, e:
+            except ValidationError as e:
                 self.date = None
                 set_background(entry, "#ff699a")
         elif entry is self.timeentry:
             try:
                 self.time = self.get_time()
                 set_background(entry, "#ffffff")
-            except ValidationError, e:
+            except ValidationError as e:
                 self.time = None
                 set_background(entry, "#ff699a")
         if self.date is not None and self.time is not None:

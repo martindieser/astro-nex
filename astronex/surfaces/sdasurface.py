@@ -410,7 +410,7 @@ class DrawAux(gtk.DrawingArea):
         deg = int(deg)
         let = self.drawer.zodlet[sign]
         col = boss.opts.zodiac.zod[sign].col
-        sign = u"%s\u00b0 %s\u00b4" % (deg,mint)
+        sign = "%s\u00b0 %s\u00b4" % (deg,mint)
         
         iambio = (self.opaux == self.opbio)
         h = -([1,0][iambio]*h/2)+5

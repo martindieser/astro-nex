@@ -261,7 +261,7 @@ class DrawPlagram(gtk.DrawingArea):
         dr.dispatch_simple(cr,w,h)
         s = surface
         d = s.get_data()
-        for i in xrange(0,len(d),4):
+        for i in range(0,len(d),4):
             d[i],d[i+2] = d[i+2],d[i]
         
         im = Image.frombuffer("RGBA", (s.get_width(),s.get_height()),d,"raw","RGBA",0,1)
@@ -554,11 +554,11 @@ class PgMixin(CoreMixin,PlanetogramMixin):
         radius = radius * 0.48
         
         default = insets.pop()
-        insets = dict(zip((0,5),insets))
+        insets = dict(list(zip((0,5),insets)))
         cr.save()
         cr.set_source_rgb(0,0,0)
         cr.set_line_width(0.5*cr.get_line_width())
-        for i in xrange(360):
+        for i in range(360):
             angle = (offset+i) * RAD
             inset = radius - insets.get(i%10,default)
             self.d_radial_line(cr,radius,inset,angle)
@@ -654,14 +654,14 @@ class PgMixin(CoreMixin,PlanetogramMixin):
             return d <= 3
         
         planque = deque(plans) 
-        boolque = deque([diftuple(t) for t in izip(plans,plans[1:]+[plans[0]])])
+        boolque = deque([diftuple(t) for t in zip(plans,plans[1:]+[plans[0]])])
         if True in boolque:
             while boolque[0] != True or boolque[-1] != False:
                 boolque.rotate(-1)
                 planque.rotate(-1) 
 
         jail = []; cell = set()
-        for low,btuple in izip(planque,boolque):
+        for low,btuple in zip(planque,boolque):
             cell.add((low[0],low[1])) 
             if btuple is False: 
                 jail.append(cell)

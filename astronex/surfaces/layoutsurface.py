@@ -11,7 +11,7 @@ from .. gui.bridgewin import BridgePEWindow
 from .. extensions.path import path
 from .. countries import cata_reg
 from .. utils import parsestrtime
-from sdasurface import DrawDiagram, HouseSelector
+from .sdasurface import DrawDiagram, HouseSelector
 from datetime import datetime, timedelta
 from .. boss import boss
 curr = boss.get_state()
@@ -597,7 +597,7 @@ class DrawMaster(gtk.Layout):
         deg = int(deg)
         let = self.drawer.zodlet[sign]
         col = boss.opts.zodiac.zod[sign].col
-        signs = u"%s\u00b0 %s\u00b4" % (deg,mint)
+        signs = "%s\u00b0 %s\u00b4" % (deg,mint)
         layout = cr.create_layout()
         cr.set_source_rgb(0,0,0.6)
         font = pango.FontDescription(self.opts.font)
@@ -641,7 +641,7 @@ class DrawMaster(gtk.Layout):
             let = self.drawer.zodlet[sign]
             col = boss.opts.zodiac.zod[sign].col
             collet[i-1] = (col,let,i%2)
-            signs[i-1] = u"%s\u00b0 %s\u00b4" % (deg,mint)
+            signs[i-1] = "%s\u00b0 %s\u00b4" % (deg,mint)
         if signs[1]:
             signs[0],signs[1] = signs[1],signs[0]
 
@@ -712,7 +712,7 @@ class DrawMaster(gtk.Layout):
         font.set_size(8*pango.SCALE)
         layout.set_font_description(font)
         region = curr.loc.region
-        if boss.opts.lang == 'ca' and curr.loc.country == u'España':
+        if boss.opts.lang == 'ca' and curr.loc.country == 'España':
             region = cata_reg[region]
         layout.set_text(curr.loc.city+' ('+region+'-'+t(curr.loc.country)[0]+')')
         ink,logical = layout.get_extents()

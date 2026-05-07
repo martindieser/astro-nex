@@ -3,7 +3,7 @@
 import os
 import gtk, gobject
 import cairo, pango
-from StringIO import StringIO 
+from io import StringIO 
 from configobj import ConfigObj, ConfigObjError
 from .. extensions.path import path
 from .. config import reload_config
@@ -59,7 +59,7 @@ class IniEditor(gtk.Dialog):
                 conf.filename =  self.cfgfile
                 conf.write()
                 reload_config(conf,boss)
-            except ConfigObjError, e:
+            except ConfigObjError as e:
                 errdialog = gtk.MessageDialog(None, gtk.DIALOG_MODAL,
                         gtk.MESSAGE_ERROR,
                         gtk.BUTTONS_OK, e.message);
